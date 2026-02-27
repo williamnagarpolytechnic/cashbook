@@ -1,1 +1,71 @@
+      body { font-family: Arial, sans-serif; background-color: #f4f7f6; margin: 0; padding: 10px; }
+      
+      /* --- LOGIN STYLES --- */
+      .login-container { background-color: white; padding: 40px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); width: 90%; max-width: 320px; text-align: center; margin: 50px auto; }
+      .login-container h2 { color: #2c3e50; margin-bottom: 20px; }
+      .login-container input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+      
+      /* --- BUTTONS --- */
+      button { background-color: #2980b9; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+      button:hover { background-color: #3498db; }
+      button:disabled { background-color: #95a5a6; cursor: not-allowed; }
+      .btn-danger { background-color: #e74c3c; } .btn-danger:hover { background-color: #c0392b; }
+      .btn-warning { background-color: #f39c12; } .btn-warning:hover { background-color: #e67e22; }
+      
+      /* --- APP LAYOUT --- */
+      .app-container { display: none; width: 100%; max-width: 1400px; margin: 0 auto; }
+      .card { background-color: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 20px; }
+      
+      /* --- NAVIGATION --- */
+      .nav-bar { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #2c3e50; padding-bottom: 10px; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
+      .nav-buttons button { background-color: #7f8c8d; margin-right: 5px; margin-bottom: 5px; }
+      .nav-buttons button.active { background-color: #2c3e50; }
+      
+      /* --- DASHBOARD STYLES --- */
+      .summary-container { display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap; }
+      .summary-box { flex: 1; padding: 15px; border-radius: 8px; color: white; text-align: center; min-width: 250px; }
+      .cash-bg { background-color: #27ae60; } .bank-bg { background-color: #2980b9; }
+      
+      .entry-form-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+      .entry-form-row > * { flex: 1 1 120px; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+      .entry-form-row > input[type="text"]:nth-child(2) { flex: 3 1 200px; }
+      
+      .table-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+      table { width: 100%; border-collapse: collapse; text-align: left; font-size: 13px; min-width: 800px; }
+      th { background-color: #2c3e50; color: white; padding: 10px; border: 1px solid #ddd; }
+      td { padding: 8px; border: 1px solid #ddd; }
+      .bal-col { font-weight: bold; background-color: #f9f9f9; }
 
+      /* --- FIXED T-FORMAT REPORT STYLES (FOLIO) --- */
+      .folio-container { display: flex; width: 100%; border: 2px solid #000; flex-direction: row; table-layout: fixed; box-sizing: border-box; }
+      .folio-side { flex: 1; padding: 0; width: 50%; max-width: 50%; box-sizing: border-box; }
+      .folio-side.left { border-right: 2px solid #000; }
+      .folio-header { text-align: center; font-weight: bold; font-size: 16px; padding: 10px; border-bottom: 1px solid #000; background-color: #f0f0f0; }
+      
+      .folio-table { width: 100%; border-collapse: collapse; table-layout: fixed; box-sizing: border-box; }
+      .folio-table th { background-color: #e0e0e0; color: #000; border: 1px solid #000; padding: 8px; text-align: center; font-size: 12px; }
+      .folio-table td { border: 1px solid #000; padding: 6px; word-wrap: break-word; overflow-wrap: break-word; font-size: 12px; }
+      
+      .folio-table th:nth-child(1) { width: 15%; } /* Date */
+      .folio-table th:nth-child(2) { width: 33%; } /* Particulars */
+      .folio-table th:nth-child(3) { width: 12%; } /* Vch */
+      .folio-table th:nth-child(4) { width: 20%; } /* Cash */
+      .folio-table th:nth-child(5) { width: 20%; } /* Bank */
+      
+      .amount-col { text-align: right; }
+      .closing-row { font-weight: bold; font-style: italic; background-color: #fafafa; }
+      .total-row { font-weight: bold; font-size: 13px; background-color: #e0e0e0; }
+
+      /* --- RESPONSIVE ADJUSTMENTS --- */
+      @media (max-width: 768px) {
+        .folio-container { flex-direction: column; }
+        .folio-side { width: 100%; max-width: 100%; }
+        .folio-side.left { border-right: none; border-bottom: 2px solid #000; }
+        .entry-form-row > * { flex: 1 1 100%; }
+      }
+      
+      @media print { 
+        body, .app-container, .card { background: white; margin:0; padding:0; box-shadow: none; border:none; } 
+        .nav-bar, .card:not(#report-print-area) { display: none !important; } 
+        #report-print-area { padding: 0; margin: 0; }
+      }
