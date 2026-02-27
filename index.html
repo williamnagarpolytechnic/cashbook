@@ -32,15 +32,23 @@
       </div>
 
       <div id="dashboard-view">
-<div class="summary-container" id="dynamic-summary-boxes"></div>
+        <div class="summary-container" id="dynamic-summary-boxes"></div>
 
         <div class="card entry-form-row" id="form-container">
           <input type="date" id="entry-date" required>
           <input type="text" id="entry-details" placeholder="Particulars" required>
           <input type="text" id="entry-voucher" placeholder="Vch/Chq No.">
-          <select id="entry-method"><option value="Cash">Cash</option><option value="Bank">Bank</option></select>
-          <select id="entry-type"><option value="Receipt">Receipt (+)</option><option value="Payment">Payment (-)</option></select>
+          
+          <select id="entry-method">
+            <option value="Cash">Cash</option>
+            </select>
+          
+          <select id="entry-type">
+            <option value="Receipt">Receipt (+)</option>
+            <option value="Payment">Payment (-)</option>
+          </select>
           <input type="number" id="entry-amount" placeholder="Amount" step="0.01" required>
+          
           <button onclick="submitNewEntry()" id="submit-btn" style="background-color:#2c3e50;">Post Entry</button>
           <button onclick="cancelEdit()" id="cancel-btn" style="display:none; background-color:#7f8c8d;">Cancel Edit</button>
         </div>
@@ -49,7 +57,15 @@
           <table>
             <thead>
               <tr id="table-header">
-                <th>Date</th><th>Particulars</th><th>Vch/Chq</th><th>Method</th><th>Receipts (+)</th><th>Payments (-)</th><th>Cash Bal.</th><th>Bank Bal.</th><th>User</th>
+                <th>Date</th>
+                <th>Particulars</th>
+                <th>Vch/Chq</th>
+                <th>Method</th>
+                <th>Receipts (+)</th>
+                <th>Payments (-)</th>
+                <th>Cash Bal.</th>
+                <th>Bank Bal.</th>
+                <th>User</th>
                 </tr>
             </thead>
             <tbody id="ledger-body"></tbody>
@@ -75,7 +91,15 @@
             <div class="folio-side left">
               <div class="folio-header">RECEIPTS (Dr.)</div>
               <table class="folio-table">
-                <thead><tr><th>Date</th><th>Particulars</th><th>Vch/Chq</th><th>Cash</th><th>Bank</th></tr></thead>
+                <thead>
+                  <tr>
+                    <th class="col-date">Date</th>
+                    <th class="col-part">Particulars</th>
+                    <th class="col-vch">Vch/Chq</th>
+                    <th class="col-cash">Cash</th>
+                    <th class="col-bank">Bank</th>
+                  </tr>
+                </thead>
                 <tbody id="report-receipts-body">
                   <tr><td colspan="5" style="text-align:center; padding: 20px;">Select a month and click Generate...</td></tr>
                 </tbody>
@@ -84,7 +108,15 @@
             <div class="folio-side">
               <div class="folio-header">PAYMENTS (Cr.)</div>
               <table class="folio-table">
-                <thead><tr><th>Date</th><th>Particulars</th><th>Vch/Chq</th><th>Cash</th><th>Bank</th></tr></thead>
+                <thead>
+                  <tr>
+                    <th class="col-date">Date</th>
+                    <th class="col-part">Particulars</th>
+                    <th class="col-vch">Vch/Chq</th>
+                    <th class="col-cash">Cash</th>
+                    <th class="col-bank">Bank</th>
+                  </tr>
+                </thead>
                 <tbody id="report-payments-body">
                   <tr><td colspan="5" style="text-align:center; padding: 20px;">Select a month and click Generate...</td></tr>
                 </tbody>
@@ -94,13 +126,13 @@
         </div>
       </div>
 
-<div id="admin-view" style="display:none;">
+      <div id="admin-view" style="display:none;">
         
         <div class="card">
           <h3 style="margin-top:0;">Manage Bank Accounts</h3>
-          <p style="font-size: 12px; color: #666;">Adding a bank here will create summary boxes and dropdown options automatically.</p>
+          <p style="font-size: 12px; color: #666; margin-bottom: 10px;">Add banks here to enable them in the entry dropdown and dashboard boxes.</p>
           <div class="entry-form-row" style="margin-bottom: 15px;">
-            <input type="text" id="new-bank-name" placeholder="Enter new bank name (e.g. MCAB)">
+            <input type="text" id="new-bank-name" placeholder="Enter bank name (e.g. MCAB)">
             <button onclick="addNewBank()" id="btn-add-bank" style="background-color:#2980b9; flex: 0 1 150px;">Add Bank</button>
           </div>
           <table style="width: 100%; max-width: 500px; min-width: unset;">
@@ -115,22 +147,20 @@
             <input type="text" id="new-user" placeholder="Username">
             <input type="text" id="new-pass" placeholder="Password">
             <input type="text" id="new-name" placeholder="Full Name">
-            <select id="new-role"><option value="cashier">Cashier</option><option value="admin">Admin</option></select>
+            <select id="new-role">
+                <option value="cashier">Cashier</option>
+                <option value="admin">Admin</option>
+            </select>
             <button onclick="addNewUser()" id="btn-add-user" style="background-color:#27ae60;">Create User</button>
           </div>
         </div>
+        
         <div class="card table-wrapper">
           <h3 style="margin-top:0;">Manage System Users</h3>
-          <table>
-            <thead><tr><th>Username</th><th>Name</th><th>Status</th><th>Role</th><th>Actions</th></tr></thead>
-            <tbody id="users-body"></tbody>
-          </table>
-        </div>
-      </div>
-        <div class="card table-wrapper">
-          <h3 style="margin-top:0;">Manage System Users</h3>
-          <table>
-            <thead><tr><th>Username</th><th>Name</th><th>Status</th><th>Role</th><th>Actions</th></tr></thead>
+          <table style="min-width: 600px;">
+            <thead>
+                <tr><th>Username</th><th>Name</th><th>Status</th><th>Role</th><th>Actions</th></tr>
+            </thead>
             <tbody id="users-body"></tbody>
           </table>
         </div>
