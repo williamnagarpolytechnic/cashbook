@@ -243,8 +243,31 @@ async function loadUsers() {
     if(res.success && tbody) {
         tbody.innerHTML = '';
         res.data.forEach(u => {
-            tbody.innerHTML += `<tr><td>${u[0]}</td><td>${u[2]}</td><td>${u[3]}</td><td>${u[4].toUpperCase()}</td><td><button onclick="delUser('${u[0]}')">Delete</button></td></tr>`;
+            tbody.innerHTML += `<tr>
+                <td>${u[0]}</td>
+                <td>${u[2]}</td>
+                <td>${u[3]}</td>
+                <td>${u[4].toUpperCase()}</td>
+                <td>
+                    <button class="btn-warning" onclick="changePass('${u[0]}')" style="padding:5px; font-size:11px; margin-right:5px;">Change Pass</button>
+                    <button class="btn-danger" onclick="delUser('${u[0]}')" style="padding:5px; font-size:11px;">Delete</button>
+                </td>
+            </tr>`;
         });
+    }
+}
+
+// ALSO ADD THIS FUNCTION IF IT IS MISSING AT THE BOTTOM OF SCRIPT.JS
+async function changePass(username) {
+    const newPass = prompt(`Enter new password for ${username}:`);
+    if (!newPass || newPass.trim() === "") return; 
+    
+    const res = await apiCall('updateUserPass', { username: username, newPass: newPass });
+    if (res.success) {
+        alert(`Password for ${username} updated successfully!`);
+        loadUsers(); 
+    } else {
+        alert("Error: " + res.message);
     }
 }
 async function addNewUser() {
