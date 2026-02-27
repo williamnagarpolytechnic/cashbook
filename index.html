@@ -94,7 +94,21 @@
         </div>
       </div>
 
-      <div id="admin-view" style="display:none;">
+<div id="admin-view" style="display:none;">
+        
+        <div class="card">
+          <h3 style="margin-top:0;">Manage Bank Accounts</h3>
+          <p style="font-size: 12px; color: #666;">Adding a bank here will create summary boxes and dropdown options automatically.</p>
+          <div class="entry-form-row" style="margin-bottom: 15px;">
+            <input type="text" id="new-bank-name" placeholder="Enter new bank name (e.g. MCAB)">
+            <button onclick="addNewBank()" id="btn-add-bank" style="background-color:#2980b9; flex: 0 1 150px;">Add Bank</button>
+          </div>
+          <table style="width: 100%; max-width: 500px; min-width: unset;">
+            <thead><tr><th>Active Banks</th><th style="width: 80px;">Actions</th></tr></thead>
+            <tbody id="banks-body"></tbody>
+          </table>
+        </div>
+
         <div class="card">
           <h3 style="margin-top:0;">Add New User</h3>
           <div class="entry-form-row">
@@ -105,6 +119,14 @@
             <button onclick="addNewUser()" id="btn-add-user" style="background-color:#27ae60;">Create User</button>
           </div>
         </div>
+        <div class="card table-wrapper">
+          <h3 style="margin-top:0;">Manage System Users</h3>
+          <table>
+            <thead><tr><th>Username</th><th>Name</th><th>Status</th><th>Role</th><th>Actions</th></tr></thead>
+            <tbody id="users-body"></tbody>
+          </table>
+        </div>
+      </div>
         <div class="card table-wrapper">
           <h3 style="margin-top:0;">Manage System Users</h3>
           <table>
