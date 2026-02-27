@@ -1,5 +1,5 @@
 // ---> UPDATE THIS LINK WITH YOUR GOOGLE APPS SCRIPT /exec URL <---
-const API_URL = "https://script.google.com/macros/s/AKfycbwQzVYXsugoCWNIRRKY0Kvy_dkS7srhAYml1xYYIrzABk-2d780w-4a4nLpfX1rOIT-Wg/exec"; 
+const API_URL = "https://script.google.com/macros/s/AKfycbw5oRFdPcRSzC-ihxqWSlvUJXiWsj_fRw87Bvd93AJdEHFvpIzyiPJwU0JgNCE4szZQ_Q/exec"; 
 
 let currentUser = "";
 let currentRole = "";
