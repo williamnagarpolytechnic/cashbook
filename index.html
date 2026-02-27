@@ -38,10 +38,29 @@
       th { background-color: #2c3e50; color: white; padding: 10px; border: 1px solid #ddd; }
       td { padding: 8px; border: 1px solid #ddd; }
       
-      .folio-container { display: flex; width: 100%; border: 2px solid #000; flex-direction: row; }
-      .folio-side { flex: 1; padding: 0; min-width: 50%; }
+/* --- FIXED T-FORMAT REPORT STYLES (FOLIO) --- */
+      .folio-container { display: flex; width: 100%; border: 2px solid #000; flex-direction: row; table-layout: fixed; }
+      .folio-side { flex: 1; padding: 0; width: 50%; max-width: 50%; overflow: hidden; }
       .folio-side.left { border-right: 2px solid #000; }
+      .folio-header { text-align: center; font-weight: bold; font-size: 16px; padding: 10px; border-bottom: 1px solid #000; background-color: #f0f0f0; }
       
+      /* Force the tables to stay exactly within their half of the screen */
+      .folio-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+      .folio-table th { background-color: #e0e0e0; color: #000; border: 1px solid #000; padding: 8px; text-align: center; font-size: 12px; }
+      
+      /* Force long text to wrap instead of stretching the table */
+      .folio-table td { border: 1px solid #000; padding: 6px; word-wrap: break-word; overflow-wrap: break-word; font-size: 12px; }
+      
+      /* Set strict width percentages for columns so they never fight for space */
+      .folio-table th:nth-child(1) { width: 16%; } /* Date */
+      .folio-table th:nth-child(2) { width: 40%; } /* Particulars */
+      .folio-table th:nth-child(3) { width: 12%; } /* Vch */
+      .folio-table th:nth-child(4) { width: 16%; } /* Cash */
+      .folio-table th:nth-child(5) { width: 16%; } /* Bank */
+      
+      .amount-col { text-align: right; }
+      .closing-row { font-weight: bold; font-style: italic; background-color: #fafafa; }
+      .total-row { font-weight: bold; font-size: 13px; background-color: #e0e0e0; }
       @media (max-width: 768px) {
         .folio-container { flex-direction: column; }
         .folio-side.left { border-right: none; border-bottom: 2px solid #000; }
