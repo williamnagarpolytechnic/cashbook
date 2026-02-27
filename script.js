@@ -203,12 +203,13 @@ async function generateReport() {
   const m = document.getElementById('report-month-picker').value;
   if(!m) return alert("Please select a month first!");
 
-  // 1. Show the user that the system is working
+  // --- 1. VISUAL FEEDBACK START ---
   const btn = document.getElementById('generate-btn');
-  const originalText = btn.innerHTML;
-  btn.innerHTML = "Calculating... Please wait";
-  btn.disabled = true;
+  const originalText = btn.innerHTML; // Saves "Calculate & Generate"
+  btn.innerHTML = "Calculating... Please wait"; // Changes button text
+  btn.disabled = true; // Grays out button to prevent double-clicks
   btn.style.opacity = "0.7";
+  // --------------------------------
 
   try {
     const res = await apiCall('generateReport', { selectedMonth: m });
@@ -218,16 +219,17 @@ async function generateReport() {
       alert("Error: " + res.message);
     }
   } catch (e) {
-    console.error(e);
-    alert("An error occurred while generating the report.");
+    console.error("Report Generation Error:", e);
+    alert("An error occurred. Check the console for details.");
   } finally {
-    // 2. Reset the button back to normal regardless of success or failure
-    btn.innerHTML = originalText;
+    // --- 2. VISUAL FEEDBACK RESET ---
+    // This runs whether the report succeeded or failed
+    btn.innerHTML = originalText; 
     btn.disabled = false;
     btn.style.opacity = "1";
+    // --------------------------------
   }
 }
-
 function renderReport(data, month) {
   const rBody = document.getElementById('report-receipts-body');
   const pBody = document.getElementById('report-payments-body');
