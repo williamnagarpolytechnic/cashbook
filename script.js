@@ -253,3 +253,33 @@ async function addNewUser() {
     loadUsers();
 }
 async function delUser(u) { if(confirm("Delete user?")) { await apiCall('deleteUser', { username: u }); loadUsers(); } }
+
+async function testConnection() {
+    const resultDiv = document.getElementById('debug-result');
+    resultDiv.innerHTML = "Attempting to reach Google...";
+    resultDiv.style.color = "blue";
+
+    try {
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            mode: 'cors',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify({ action: 'verifyUser', username: 'test', password: 'test' })
+        });
+
+        const status = response.status;
+        const text = await response.text();
+
+        if (status === 200) {
+            resultDiv.innerHTML = "✅ SUCCESS! Google replied with Status 200. The API is reachable.";
+            resultDiv.style.color = "green";
+            console.log("Full Response:", text);
+        } else {
+            resultDiv.innerHTML = `❌ FAILED: Server returned Status ${status}.`;
+            resultDiv.style.color = "red";
+        }
+    } catch (e) {
+        resultDiv.innerHTML = `❌ NETWORK ERROR: ${e.message}. Check if API_URL is a full https link.`;
+        resultDiv.style.color = "red";
+    }
+}
