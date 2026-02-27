@@ -329,6 +329,81 @@
       async function delUser(username) {
           if(confirm(`Delete user ${username}?`)) { await apiCall('deleteUser', { username: username }); loadUsers(); }
       }
+
+     // --- REPORT GENERATION LOGIC ---
+      async function generateReport() {
+        const selectedMonth = document.getElementById('report-month-picker').value; 
+        if(!selectedMonth) { alert("Please select a month and year first."); return; }
+
+        const btn = document.getElementById('generate-btn');
+        btn.innerHTML = "Calculating..."; btn.disabled = true;
+
+        const response = await apiCall('generateReport', { selectedMonth: selectedMonth });
+        
+        btn.innerHTML = "Calculate & Generate"; btn.disabled = false;
+        
+        if (response.success) renderReport(response.data || response, selectedMonth);
+        else alert("Error generating report: " + response.message);
+      }
+
+      function renderReport(data, selectedMonth) {
+        const rBody = document.getElementById('report-receipts-body');
+        const pBody = document.getElementById('report-payments-body');
+        rBody.innerHTML = ''; pBody.innerHTML = '';
+
+        const dateInput = selectedMonth.split('-');
+        const firstDayStr = "01/" + dateInput[1] + "/" + dateInput[0];
+
+        rBody.innerHTML += `<tr class="closing-row"><td>${firstDayStr}</td><td>To Opening Balance b/d</td><td></td><td class="amount-col">${data.openingCash}</td><td class="amount-col">${data.openingBank}</td></tr>`;
+
+        if (data.receipts) {
+          data.receipts.forEach(tx => {
+            const cAmt = (tx.method === "Cash") ? tx.receipt.toFixed(2) : "";
+            const bAmt = (tx.method === "Bank") ? tx.receipt.toFixed(2) : "";
+            rBody.innerHTML += `<tr><td>${tx.dateStr}</td><td>${tx.particulars}</td><td>${tx.voucher}</td><td class="amount-col">${cAmt}</td><td class="amount-col">${bAmt}</td></tr>`;
+          });
+        }
+
+        if (data.payments) {
+          data.payments.forEach(tx => {
+            const cAmt = (tx.method === "Cash") ? tx.payment.toFixed(2) : "";
+            const bAmt = (tx.method === "Bank") ? tx.payment.toFixed(2) : "";
+            pBody.innerHTML += `<tr><td>${tx.dateStr}</td><td>${tx.particulars}</td><td>${tx.voucher}</td><td class="amount-col">${cAmt}</td><td class="amount-col">${bAmt}</td></tr>`;
+          });
+        }
+
+        pBody.innerHTML += `<tr class="closing-row"><td>End of Mth</td><td>By Closing Balance c/d</td><td></td><td class="amount-col">${data.closingCash}</td><td class="amount-col">${data.closingBank}</td></tr>`;
+
+        const totalHtml = `<td colspan="3" style="text-align:right;">TOTAL:</td><td class="amount-col">${data.grandTotalCash}</td><td class="amount-col">${data.grandTotalBank}</td>`;
+        rBody.innerHTML += `<tr class="total-row">${totalHtml}</tr>`;
+        pBody.innerHTML += `<tr class="total-row">${totalHtml}</tr>`;
+        
+        const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        document.getElementById('report-title').innerHTML = `Cash Book Folio - ${monthNames[parseInt(dateInput[1]) - 1]} ${dateInput[0]}`;
+      }
+
+      // --- PDF GENERATION LOGIC ---
+      function downloadPDF() {
+        const element = document.getElementById('report-print-area');
+        const monthInput = document.getElementById('report-month-picker').value;
+        if(!monthInput) { alert("Please generate a report first."); return; }
+
+        const btn = document.getElementById('btn-pdf');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = "Generating..."; btn.disabled = true;
+
+        const opt = {
+          margin: 0.5,
+          filename: 'CashBook_Report_' + monthInput + '.pdf',
+          image: { type: 'jpeg', quality: 0.98 },
+          html2canvas: { scale: 2 },
+          jsPDF: { unit: 'in', format: 'a4', orientation: 'landscape' }
+        };
+
+        html2pdf().set(opt).from(element).save().then(() => {
+          btn.innerHTML = originalText; btn.disabled = false;
+        });
+      }   
     </script>
 </body>
 </html>
