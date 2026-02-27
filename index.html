@@ -120,11 +120,46 @@
         </div>
       </div>
 
-      <div id="report-view" style="display: none;">
-         <h3 style="text-align:center; padding: 50px;">(Paste your report HTML here to save space)</h3>
-      </div>
+<div id="report-view" style="display: none;">
+        <div class="card" style="display: flex; gap: 15px; align-items: center; background-color: #fdfdfd; flex-wrap: wrap;">
+          <h3 style="margin: 0; color: #2c3e50;">Generate Cash Book Page:</h3>
+          <input type="month" id="report-month-picker" style="margin: 0;">
+          <button onclick="generateReport()" id="generate-btn" style="background-color: #27ae60;">Calculate & Generate</button>
+          
+          <div style="margin-left: auto; display: flex; gap: 10px;">
+              <button onclick="downloadPDF()" id="btn-pdf" style="background-color: #d35400;">Download PDF</button>
+              <button onclick="window.print()" style="background-color: #7f8c8d;">Print</button>
+          </div>
+        </div>
 
-    </div>
+        <div id="report-print-area" class="card table-wrapper" style="min-height: 400px; padding: 30px;">
+          <h2 id="report-title" style="text-align: center; margin-top: 0;">Monthly Cash Book Report</h2>
+          <div class="folio-container">
+            <div class="folio-side left">
+              <div class="folio-header">RECEIPTS (Dr.)</div>
+              <table class="folio-table">
+                <thead>
+                  <tr><th style="width: 80px;">Date</th><th>Particulars</th><th style="width: 60px;">Vch/Chq</th><th class="amount-col">Cash</th><th class="amount-col">Bank</th></tr>
+                </thead>
+                <tbody id="report-receipts-body">
+                  <tr><td colspan="5" style="text-align:center; padding: 20px;">Select a month and click Generate...</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="folio-side">
+              <div class="folio-header">PAYMENTS (Cr.)</div>
+              <table class="folio-table">
+                <thead>
+                  <tr><th style="width: 80px;">Date</th><th>Particulars</th><th style="width: 60px;">Vch/Chq</th><th class="amount-col">Cash</th><th class="amount-col">Bank</th></tr>
+                </thead>
+                <tbody id="report-payments-body">
+                  <tr><td colspan="5" style="text-align:center; padding: 20px;">Select a month and click Generate...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
 
     <script>
       // ---> UPDATE THIS LINK WITH YOUR NEW /exec URL <---
