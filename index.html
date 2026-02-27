@@ -8,65 +8,75 @@
     <style>
       body { font-family: Arial, sans-serif; background-color: #f4f7f6; margin: 0; padding: 10px; }
       
+      /* --- LOGIN STYLES --- */
       .login-container { background-color: white; padding: 40px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); width: 90%; max-width: 320px; text-align: center; margin: 50px auto; }
+      .login-container h2 { color: #2c3e50; margin-bottom: 20px; }
       .login-container input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
       
+      /* --- BUTTONS --- */
       button { background-color: #2980b9; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; transition: 0.2s; }
       button:hover { background-color: #3498db; }
       button:disabled { background-color: #95a5a6; cursor: not-allowed; }
       .btn-danger { background-color: #e74c3c; } .btn-danger:hover { background-color: #c0392b; }
       .btn-warning { background-color: #f39c12; } .btn-warning:hover { background-color: #e67e22; }
       
+      /* --- APP LAYOUT --- */
       .app-container { display: none; width: 100%; max-width: 1400px; margin: 0 auto; }
       .card { background-color: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 20px; }
       
-      /* --- MOBILE RESPONSIVE CSS --- */
+      /* --- NAVIGATION --- */
       .nav-bar { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #2c3e50; padding-bottom: 10px; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
       .nav-buttons button { background-color: #7f8c8d; margin-right: 5px; margin-bottom: 5px; }
       .nav-buttons button.active { background-color: #2c3e50; }
       
+      /* --- DASHBOARD STYLES --- */
       .summary-container { display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap; }
       .summary-box { flex: 1; padding: 15px; border-radius: 8px; color: white; text-align: center; min-width: 250px; }
       .cash-bg { background-color: #27ae60; } .bank-bg { background-color: #2980b9; }
       
       .entry-form-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
-      .entry-form-row > * { flex: 1 1 120px; padding: 10px; border: 1px solid #ccc; border-radius: 4px; }
+      .entry-form-row > * { flex: 1 1 120px; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
       .entry-form-row > input[type="text"]:nth-child(2) { flex: 3 1 200px; }
       
       .table-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; }
       table { width: 100%; border-collapse: collapse; text-align: left; font-size: 13px; min-width: 800px; }
       th { background-color: #2c3e50; color: white; padding: 10px; border: 1px solid #ddd; }
       td { padding: 8px; border: 1px solid #ddd; }
-      
-/* --- FIXED T-FORMAT REPORT STYLES (FOLIO) --- */
-      .folio-container { display: flex; width: 100%; border: 2px solid #000; flex-direction: row; table-layout: fixed; }
-      .folio-side { flex: 1; padding: 0; width: 50%; max-width: 50%; overflow: hidden; }
+      .bal-col { font-weight: bold; background-color: #f9f9f9; }
+
+      /* --- FIXED T-FORMAT REPORT STYLES (FOLIO) --- */
+      .folio-container { display: flex; width: 100%; border: 2px solid #000; flex-direction: row; table-layout: fixed; box-sizing: border-box; }
+      .folio-side { flex: 1; padding: 0; width: 50%; max-width: 50%; box-sizing: border-box; }
       .folio-side.left { border-right: 2px solid #000; }
       .folio-header { text-align: center; font-weight: bold; font-size: 16px; padding: 10px; border-bottom: 1px solid #000; background-color: #f0f0f0; }
       
-      /* Force the tables to stay exactly within their half of the screen */
-      .folio-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+      .folio-table { width: 100%; border-collapse: collapse; table-layout: fixed; box-sizing: border-box; }
       .folio-table th { background-color: #e0e0e0; color: #000; border: 1px solid #000; padding: 8px; text-align: center; font-size: 12px; }
-      
-      /* Force long text to wrap instead of stretching the table */
       .folio-table td { border: 1px solid #000; padding: 6px; word-wrap: break-word; overflow-wrap: break-word; font-size: 12px; }
       
-      /* Set strict width percentages for columns so they never fight for space */
-      .folio-table th:nth-child(1) { width: 16%; } /* Date */
-      .folio-table th:nth-child(2) { width: 40%; } /* Particulars */
+      .folio-table th:nth-child(1) { width: 15%; } /* Date */
+      .folio-table th:nth-child(2) { width: 33%; } /* Particulars */
       .folio-table th:nth-child(3) { width: 12%; } /* Vch */
-      .folio-table th:nth-child(4) { width: 16%; } /* Cash */
-      .folio-table th:nth-child(5) { width: 16%; } /* Bank */
+      .folio-table th:nth-child(4) { width: 20%; } /* Cash */
+      .folio-table th:nth-child(5) { width: 20%; } /* Bank */
       
       .amount-col { text-align: right; }
       .closing-row { font-weight: bold; font-style: italic; background-color: #fafafa; }
       .total-row { font-weight: bold; font-size: 13px; background-color: #e0e0e0; }
+
+      /* --- RESPONSIVE ADJUSTMENTS --- */
       @media (max-width: 768px) {
         .folio-container { flex-direction: column; }
+        .folio-side { width: 100%; max-width: 100%; }
         .folio-side.left { border-right: none; border-bottom: 2px solid #000; }
-        .entry-form-row > * { flex: 1 1 100%; } /* Stack form fields on mobile */
+        .entry-form-row > * { flex: 1 1 100%; }
       }
-      @media print { body, .app-container, .card { background: white; margin:0; padding:0; box-shadow: none; border:none; } .nav-bar, .card:not(#report-print-area) { display: none !important; } }
+      
+      @media print { 
+        body, .app-container, .card { background: white; margin:0; padding:0; box-shadow: none; border:none; } 
+        .nav-bar, .card:not(#report-print-area) { display: none !important; } 
+        #report-print-area { padding: 0; margin: 0; }
+      }
     </style>
 </head>
 <body>
@@ -76,7 +86,7 @@
       <input type="text" id="username" placeholder="Username">
       <input type="password" id="password" placeholder="Password">
       <button onclick="attemptLogin()" id="login-btn" style="width: 100%;">Secure Login</button>
-      <div id="error-message" style="color:red; margin-top:10px;"></div>
+      <div id="error-message" style="color:red; margin-top:10px; font-size:14px;"></div>
     </div>
 
     <div id="app-wrapper" class="app-container">
@@ -87,13 +97,16 @@
           <button id="nav-rep" onclick="switchTab('report')">Folio Report</button>
           <button id="nav-admin" onclick="switchTab('admin')" style="display:none; background-color:#8e44ad;">Admin Panel</button>
         </div>
-        <div><span id="welcome-text" style="font-weight: bold; margin-right: 15px;"></span><button class="btn-danger" onclick="location.reload()">Log Out</button></div>
+        <div>
+          <span id="welcome-text" style="font-weight: bold; margin-right: 15px; color:#2c3e50;"></span>
+          <button class="btn-danger" onclick="location.reload()">Log Out</button>
+        </div>
       </div>
 
       <div id="dashboard-view">
         <div class="summary-container">
-          <div class="summary-box cash-bg"><div>Current Cash in Hand</div><h2 id="display-cash-bal">0.00</h2></div>
-          <div class="summary-box bank-bg"><div>Current Bank Balance</div><h2 id="display-bank-bal">0.00</h2></div>
+          <div class="summary-box cash-bg"><div style="text-transform:uppercase; font-size:12px;">Current Cash in Hand</div><h2 id="display-cash-bal" style="margin:5px 0 0 0;">0.00</h2></div>
+          <div class="summary-box bank-bg"><div style="text-transform:uppercase; font-size:12px;">Current Bank Balance</div><h2 id="display-bank-bal" style="margin:5px 0 0 0;">0.00</h2></div>
         </div>
 
         <div class="card entry-form-row" id="form-container">
@@ -103,7 +116,7 @@
           <select id="entry-method"><option value="Cash">Cash</option><option value="Bank">Bank</option></select>
           <select id="entry-type"><option value="Receipt">Receipt (+)</option><option value="Payment">Payment (-)</option></select>
           <input type="number" id="entry-amount" placeholder="Amount" step="0.01" required>
-          <button onclick="submitNewEntry()" id="submit-btn">Post Entry</button>
+          <button onclick="submitNewEntry()" id="submit-btn" style="background-color:#2c3e50;">Post Entry</button>
           <button onclick="cancelEdit()" id="cancel-btn" style="display:none; background-color:#7f8c8d;">Cancel Edit</button>
         </div>
 
@@ -116,6 +129,43 @@
             </thead>
             <tbody id="ledger-body"></tbody>
           </table>
+        </div>
+      </div>
+
+      <div id="report-view" style="display: none;">
+        <div class="card" style="display: flex; gap: 15px; align-items: center; background-color: #fdfdfd; flex-wrap: wrap;">
+          <h3 style="margin: 0; color: #2c3e50; font-size:16px;">Generate Cash Book Page:</h3>
+          <input type="month" id="report-month-picker" style="margin: 0; padding:8px;">
+          <button onclick="generateReport()" id="generate-btn" style="background-color: #27ae60;">Calculate & Generate</button>
+          
+          <div style="margin-left: auto; display: flex; gap: 10px;">
+              <button onclick="downloadPDF()" id="btn-pdf" style="background-color: #d35400;">Download PDF</button>
+              <button onclick="window.print()" style="background-color: #7f8c8d;">Print</button>
+          </div>
+        </div>
+
+        <div id="report-print-area" class="card table-wrapper" style="min-height: 400px; padding: 30px;">
+          <h2 id="report-title" style="text-align: center; margin-top: 0;">Monthly Cash Book Report</h2>
+          <div class="folio-container">
+            <div class="folio-side left">
+              <div class="folio-header">RECEIPTS (Dr.)</div>
+              <table class="folio-table">
+                <thead><tr><th>Date</th><th>Particulars</th><th>Vch/Chq</th><th>Cash</th><th>Bank</th></tr></thead>
+                <tbody id="report-receipts-body">
+                  <tr><td colspan="5" style="text-align:center; padding: 20px;">Select a month and click Generate...</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="folio-side">
+              <div class="folio-header">PAYMENTS (Cr.)</div>
+              <table class="folio-table">
+                <thead><tr><th>Date</th><th>Particulars</th><th>Vch/Chq</th><th>Cash</th><th>Bank</th></tr></thead>
+                <tbody id="report-payments-body">
+                  <tr><td colspan="5" style="text-align:center; padding: 20px;">Select a month and click Generate...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -139,77 +189,34 @@
         </div>
       </div>
 
-<div id="report-view" style="display: none;">
-        <div class="card" style="display: flex; gap: 15px; align-items: center; background-color: #fdfdfd; flex-wrap: wrap;">
-          <h3 style="margin: 0; color: #2c3e50;">Generate Cash Book Page:</h3>
-          <input type="month" id="report-month-picker" style="margin: 0;">
-          <button onclick="generateReport()" id="generate-btn" style="background-color: #27ae60;">Calculate & Generate</button>
-          
-          <div style="margin-left: auto; display: flex; gap: 10px;">
-              <button onclick="downloadPDF()" id="btn-pdf" style="background-color: #d35400;">Download PDF</button>
-              <button onclick="window.print()" style="background-color: #7f8c8d;">Print</button>
-          </div>
-        </div>
-
-        <div id="report-print-area" class="card table-wrapper" style="min-height: 400px; padding: 30px;">
-          <h2 id="report-title" style="text-align: center; margin-top: 0;">Monthly Cash Book Report</h2>
-          <div class="folio-container">
-            <div class="folio-side left">
-              <div class="folio-header">RECEIPTS (Dr.)</div>
-              <table class="folio-table">
-                <thead>
-                  <tr><th style="width: 80px;">Date</th><th>Particulars</th><th style="width: 60px;">Vch/Chq</th><th class="amount-col">Cash</th><th class="amount-col">Bank</th></tr>
-                </thead>
-                <tbody id="report-receipts-body">
-                  <tr><td colspan="5" style="text-align:center; padding: 20px;">Select a month and click Generate...</td></tr>
-                </tbody>
-              </table>
-            </div>
-            <div class="folio-side">
-              <div class="folio-header">PAYMENTS (Cr.)</div>
-              <table class="folio-table">
-                <thead>
-                  <tr><th style="width: 80px;">Date</th><th>Particulars</th><th style="width: 60px;">Vch/Chq</th><th class="amount-col">Cash</th><th class="amount-col">Bank</th></tr>
-                </thead>
-                <tbody id="report-payments-body">
-                  <tr><td colspan="5" style="text-align:center; padding: 20px;">Select a month and click Generate...</td></tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      </div>
+    </div>
 
     <script>
-      // ---> UPDATE THIS LINK WITH YOUR NEW /exec URL <---
+      // ---> UPDATE THIS LINK WITH YOUR GOOGLE APPS SCRIPT /exec URL <---
       const API_URL = "https://script.google.com/macros/s/AKfycbwQzVYXsugoCWNIRRKY0Kvy_dkS7srhAYml1xYYIrzABk-2d780w-4a4nLpfX1rOIT-Wg/exec"; 
       
       let currentUser = "";
       let currentRole = "";
-      let editingRow = null; // Stores row number if admin is correcting an entry
+      let editingRow = null; 
 
-// --- CORE API COMMUNICATION FUNCTION (UPGRADED) ---
+      // --- 1. CORE API CALL ---
       async function apiCall(action, payload) {
         try {
             const response = await fetch(API_URL, { 
                 method: 'POST', 
-                headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // Forces Google to bypass CORS blocks
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                 body: JSON.stringify({ action: action, ...payload }) 
             });
-            
-            const rawText = await response.text(); // Read exactly what Google sent back
-            
-            try {
-                return JSON.parse(rawText); // Try to read it as data
-            } catch (err) {
-                // If it fails, Google sent an HTML error page! 
-                console.error("GOOGLE SENT HTML INSTEAD OF DATA:", rawText);
-                return { success: false, message: "Google blocked the request. Check the browser console (Ctrl+Shift+I) for the exact error." };
+            const rawText = await response.text();
+            try { return JSON.parse(rawText); } 
+            catch (err) {
+                console.error("HTML Received:", rawText);
+                return { success: false, message: "Google blocked the request. Check your Web App URL or permissions." };
             }
-        } catch (e) { 
-            return { success: false, message: "Fetch failed: " + e.message }; 
-        }
+        } catch (e) { return { success: false, message: "Network Error: " + e.message }; }
       }
+
+      // --- 2. NAVIGATION ---
       function switchTab(tab) {
         document.getElementById('dashboard-view').style.display = (tab === 'dashboard') ? 'block' : 'none';
         document.getElementById('report-view').style.display = (tab === 'report') ? 'block' : 'none';
@@ -222,11 +229,14 @@
         if(tab === 'admin') loadUsers();
       }
 
+      // --- 3. LOGIN LOGIC ---
       async function attemptLogin() {
         const u = document.getElementById('username').value, p = document.getElementById('password').value;
-        const btn = document.getElementById('login-btn'); btn.innerHTML = "Verifying...";
+        const btn = document.getElementById('login-btn'); btn.innerHTML = "Verifying..."; btn.disabled = true;
+        document.getElementById('error-message').innerHTML = "";
         
         const res = await apiCall('verifyUser', { username: u, password: p });
+        
         if (res.success) {
           currentUser = res.name; currentRole = res.role;
           document.getElementById('login-view').style.display = 'none';
@@ -241,11 +251,12 @@
           const dataRes = await apiCall('getLedgerData', {});
           if(dataRes.success) updateTable(dataRes.data);
         } else {
-          btn.innerHTML = "Secure Login"; document.getElementById('error-message').innerHTML = res.message;
+          btn.innerHTML = "Secure Login"; btn.disabled = false;
+          document.getElementById('error-message').innerHTML = res.message;
         }
       }
 
-      // --- TRANSACTION MANAGEMENT (Self-Healing) ---
+      // --- 4. TRANSACTION LOGIC ---
       async function submitNewEntry() {
         const btn = document.getElementById('submit-btn');
         const entryData = {
@@ -262,10 +273,8 @@
 
         let res;
         if(editingRow) {
-            // Send correction to backend self-healing engine
             res = await apiCall('updateTransaction', { rowNum: editingRow, entryData: entryData, userName: currentUser });
-            editingRow = null;
-            btn.style.backgroundColor = "#2c3e50";
+            editingRow = null; btn.style.backgroundColor = "#2c3e50";
             document.getElementById('cancel-btn').style.display = "none";
         } else {
             res = await apiCall('addEntry', { entryData: entryData, userName: currentUser });
@@ -274,12 +283,11 @@
         if (res.success) {
             updateTable(res.data); 
             document.getElementById('entry-details').value = ''; document.getElementById('entry-amount').value = '';
-        }
+        } else alert("Error: " + res.message);
         btn.innerHTML = "Post Entry"; btn.disabled = false;
       }
 
       function loadTransactionForEdit(rowNum, dateStr, details, vch, method, rec, pay) {
-        // Convert dd/mm/yyyy to yyyy-mm-dd for the HTML input
         const dParts = dateStr.split('/');
         document.getElementById('entry-date').value = `${dParts[2]}-${dParts[1]}-${dParts[0]}`;
         document.getElementById('entry-details').value = details;
@@ -290,10 +298,9 @@
         
         editingRow = rowNum;
         const btn = document.getElementById('submit-btn');
-        btn.innerHTML = "Update Corrected Entry";
-        btn.style.backgroundColor = "#f39c12"; // Orange alert color
+        btn.innerHTML = "Update Corrected Entry"; btn.style.backgroundColor = "#f39c12"; 
         document.getElementById('cancel-btn').style.display = "inline-block";
-        window.scrollTo(0, 0); // Scroll up to form
+        window.scrollTo(0, 0); 
       }
 
       function cancelEdit() {
@@ -319,20 +326,86 @@
 
         data.forEach(row => {
           let tr = `<tr><td>${row[1]}</td><td>${row[2]}</td><td>${row[3]}</td><td>${row[4]}</td><td>${row[5]}</td><td>${row[6]}</td><td class="bal-col">${parseFloat(row[7]).toFixed(2)}</td><td class="bal-col">${parseFloat(row[8]).toFixed(2)}</td><td>${row[9]}</td>`;
-          
-          // Inject Admin Edit/Delete buttons (Row 10 holds the actual spreadsheet row number)
           if(currentRole === 'admin') {
              tr += `<td>
                      <button class="btn-warning" onclick="loadTransactionForEdit(${row[10]}, '${row[1]}', '${row[2]}', '${row[3]}', '${row[4]}', ${parseFloat(row[5]||0)}, ${parseFloat(row[6]||0)})" style="padding:5px; font-size:11px;">Edit</button>
                      <button class="btn-danger" onclick="deleteTx(${row[10]})" style="padding:5px; font-size:11px;">Del</button>
                    </td>`;
           }
-          tr += `</tr>`;
-          tbody.innerHTML += tr;
+          tr += `</tr>`; tbody.innerHTML += tr;
         });
       }
 
-      // --- USER MANAGEMENT ---
+      // --- 5. REPORT LOGIC ---
+      async function generateReport() {
+        const selectedMonth = document.getElementById('report-month-picker').value; 
+        if(!selectedMonth) { alert("Please select a month and year first."); return; }
+
+        const btn = document.getElementById('generate-btn'); btn.innerHTML = "Calculating..."; btn.disabled = true;
+        const response = await apiCall('generateReport', { selectedMonth: selectedMonth });
+        btn.innerHTML = "Calculate & Generate"; btn.disabled = false;
+        
+        if (response.success) renderReport(response.data || response, selectedMonth);
+        else alert("Error generating report: " + (response.message || response.error || "Unknown Error"));
+      }
+
+      function renderReport(data, selectedMonth) {
+        const rBody = document.getElementById('report-receipts-body');
+        const pBody = document.getElementById('report-payments-body');
+        rBody.innerHTML = ''; pBody.innerHTML = '';
+
+        const dateInput = selectedMonth.split('-');
+        const firstDayStr = "01/" + dateInput[1] + "/" + dateInput[0];
+
+        rBody.innerHTML += `<tr class="closing-row"><td>${firstDayStr}</td><td>To Opening Balance b/d</td><td></td><td class="amount-col">${data.openingCash}</td><td class="amount-col">${data.openingBank}</td></tr>`;
+
+        if (data.receipts) {
+          data.receipts.forEach(tx => {
+            const method = (tx.method || "").toString().trim().toLowerCase();
+            const cAmt = (method === "cash") ? tx.receipt.toFixed(2) : "";
+            const bAmt = (method === "bank") ? tx.receipt.toFixed(2) : "";
+            rBody.innerHTML += `<tr><td>${tx.dateStr}</td><td>${tx.particulars}</td><td>${tx.voucher}</td><td class="amount-col">${cAmt}</td><td class="amount-col">${bAmt}</td></tr>`;
+          });
+        }
+
+        if (data.payments) {
+          data.payments.forEach(tx => {
+            const method = (tx.method || "").toString().trim().toLowerCase();
+            const cAmt = (method === "cash") ? tx.payment.toFixed(2) : "";
+            const bAmt = (method === "bank") ? tx.payment.toFixed(2) : "";
+            pBody.innerHTML += `<tr><td>${tx.dateStr}</td><td>${tx.particulars}</td><td>${tx.voucher}</td><td class="amount-col">${cAmt}</td><td class="amount-col">${bAmt}</td></tr>`;
+          });
+        }
+
+        pBody.innerHTML += `<tr class="closing-row"><td>End of Mth</td><td>By Closing Balance c/d</td><td></td><td class="amount-col">${data.closingCash}</td><td class="amount-col">${data.closingBank}</td></tr>`;
+
+        const totalHtml = `<td colspan="3" style="text-align:right;">TOTAL:</td><td class="amount-col">${data.grandTotalCash}</td><td class="amount-col">${data.grandTotalBank}</td>`;
+        rBody.innerHTML += `<tr class="total-row">${totalHtml}</tr>`;
+        pBody.innerHTML += `<tr class="total-row">${totalHtml}</tr>`;
+        
+        const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        document.getElementById('report-title').innerHTML = `Cash Book Folio - ${monthNames[parseInt(dateInput[1]) - 1]} ${dateInput[0]}`;
+      }
+
+      function downloadPDF() {
+        const element = document.getElementById('report-print-area');
+        const monthInput = document.getElementById('report-month-picker').value;
+        if(!monthInput) { alert("Please generate a report first."); return; }
+
+        const btn = document.getElementById('btn-pdf');
+        const originalText = btn.innerHTML; btn.innerHTML = "Generating..."; btn.disabled = true;
+
+        const opt = {
+          margin: 0.5,
+          filename: 'CashBook_Report_' + monthInput + '.pdf',
+          image: { type: 'jpeg', quality: 0.98 },
+          html2canvas: { scale: 2 },
+          jsPDF: { unit: 'in', format: 'a4', orientation: 'landscape' }
+        };
+        html2pdf().set(opt).from(element).save().then(() => { btn.innerHTML = originalText; btn.disabled = false; });
+      }
+
+      // --- 6. ADMIN USER LOGIC ---
       async function loadUsers() {
           const res = await apiCall('getUsers', {});
           const tbody = document.getElementById('users-body'); tbody.innerHTML = '';
@@ -363,85 +436,6 @@
       async function delUser(username) {
           if(confirm(`Delete user ${username}?`)) { await apiCall('deleteUser', { username: username }); loadUsers(); }
       }
-
-// --- REPORT GENERATION LOGIC (UPGRADED) ---
-      async function generateReport() {
-        const selectedMonth = document.getElementById('report-month-picker').value; 
-        if(!selectedMonth) { alert("Please select a month and year first."); return; }
-
-        const btn = document.getElementById('generate-btn');
-        btn.innerHTML = "Calculating..."; btn.disabled = true;
-
-        const response = await apiCall('generateReport', { selectedMonth: selectedMonth });
-        
-        btn.innerHTML = "Calculate & Generate"; btn.disabled = false;
-        
-        if (response.success) {
-            renderReport(response.data || response, selectedMonth);
-        } else {
-            // This safely grabs the error whether it is labeled 'message' or 'error'
-            alert("Error generating report: " + (response.message || response.error || "Unknown Error"));
-        }
-      }
-
-      function renderReport(data, selectedMonth) {
-        const rBody = document.getElementById('report-receipts-body');
-        const pBody = document.getElementById('report-payments-body');
-        rBody.innerHTML = ''; pBody.innerHTML = '';
-
-        const dateInput = selectedMonth.split('-');
-        const firstDayStr = "01/" + dateInput[1] + "/" + dateInput[0];
-
-        rBody.innerHTML += `<tr class="closing-row"><td>${firstDayStr}</td><td>To Opening Balance b/d</td><td></td><td class="amount-col">${data.openingCash}</td><td class="amount-col">${data.openingBank}</td></tr>`;
-
-        if (data.receipts) {
-          data.receipts.forEach(tx => {
-            const cAmt = (tx.method === "Cash") ? tx.receipt.toFixed(2) : "";
-            const bAmt = (tx.method === "Bank") ? tx.receipt.toFixed(2) : "";
-            rBody.innerHTML += `<tr><td>${tx.dateStr}</td><td>${tx.particulars}</td><td>${tx.voucher}</td><td class="amount-col">${cAmt}</td><td class="amount-col">${bAmt}</td></tr>`;
-          });
-        }
-
-        if (data.payments) {
-          data.payments.forEach(tx => {
-            const cAmt = (tx.method === "Cash") ? tx.payment.toFixed(2) : "";
-            const bAmt = (tx.method === "Bank") ? tx.payment.toFixed(2) : "";
-            pBody.innerHTML += `<tr><td>${tx.dateStr}</td><td>${tx.particulars}</td><td>${tx.voucher}</td><td class="amount-col">${cAmt}</td><td class="amount-col">${bAmt}</td></tr>`;
-          });
-        }
-
-        pBody.innerHTML += `<tr class="closing-row"><td>End of Mth</td><td>By Closing Balance c/d</td><td></td><td class="amount-col">${data.closingCash}</td><td class="amount-col">${data.closingBank}</td></tr>`;
-
-        const totalHtml = `<td colspan="3" style="text-align:right;">TOTAL:</td><td class="amount-col">${data.grandTotalCash}</td><td class="amount-col">${data.grandTotalBank}</td>`;
-        rBody.innerHTML += `<tr class="total-row">${totalHtml}</tr>`;
-        pBody.innerHTML += `<tr class="total-row">${totalHtml}</tr>`;
-        
-        const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-        document.getElementById('report-title').innerHTML = `Cash Book Folio - ${monthNames[parseInt(dateInput[1]) - 1]} ${dateInput[0]}`;
-      }
-
-      // --- PDF GENERATION LOGIC ---
-      function downloadPDF() {
-        const element = document.getElementById('report-print-area');
-        const monthInput = document.getElementById('report-month-picker').value;
-        if(!monthInput) { alert("Please generate a report first."); return; }
-
-        const btn = document.getElementById('btn-pdf');
-        const originalText = btn.innerHTML;
-        btn.innerHTML = "Generating..."; btn.disabled = true;
-
-        const opt = {
-          margin: 0.5,
-          filename: 'CashBook_Report_' + monthInput + '.pdf',
-          image: { type: 'jpeg', quality: 0.98 },
-          html2canvas: { scale: 2 },
-          jsPDF: { unit: 'in', format: 'a4', orientation: 'landscape' }
-        };
-
-        html2pdf().set(opt).from(element).save().then(() => {
-          btn.innerHTML = originalText; btn.disabled = false;
-        });
-      }   
     </script>
 </body>
 </html>
