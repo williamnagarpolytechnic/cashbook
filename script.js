@@ -201,9 +201,31 @@ async function deleteTx(row) { if(confirm("Delete?")) { const res = await apiCal
 // --- 6. REPORT LOGIC ---
 async function generateReport() {
   const m = document.getElementById('report-month-picker').value;
-  if(!m) return;
-  const res = await apiCall('generateReport', { selectedMonth: m });
-  if(res.success) renderReport(res.data || res, m);
+  if(!m) return alert("Please select a month first!");
+
+  // 1. Show the user that the system is working
+  const btn = document.getElementById('generate-btn');
+  const originalText = btn.innerHTML;
+  btn.innerHTML = "Calculating... Please wait";
+  btn.disabled = true;
+  btn.style.opacity = "0.7";
+
+  try {
+    const res = await apiCall('generateReport', { selectedMonth: m });
+    if(res.success) {
+      renderReport(res.data || res, m);
+    } else {
+      alert("Error: " + res.message);
+    }
+  } catch (e) {
+    console.error(e);
+    alert("An error occurred while generating the report.");
+  } finally {
+    // 2. Reset the button back to normal regardless of success or failure
+    btn.innerHTML = originalText;
+    btn.disabled = false;
+    btn.style.opacity = "1";
+  }
 }
 
 function renderReport(data, month) {
