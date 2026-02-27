@@ -188,7 +188,7 @@ td {
   width: 100%; 
   border-collapse: collapse; 
   table-layout: fixed; 
-  min-width: unset; /* Prevents standard table CSS from overriding the grid */
+  min-width: 0 !important; /* <--- THIS IS THE MAGIC FIX */
 }
 .folio-table th, .folio-table td { 
   border: 1px solid #000; 
