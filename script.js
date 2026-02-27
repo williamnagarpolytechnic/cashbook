@@ -6,21 +6,29 @@ let currentRole = "";
 let editingRow = null; 
 let activeBanks = []; 
 
-// --- 1. CORE API CALL ---
 async function apiCall(action, payload) {
   try {
       const response = await fetch(API_URL, { 
           method: 'POST', 
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          mode: 'cors', // This is important
+          headers: { 
+            // We use text/plain to avoid the "OPTIONS" pre-flight 405 error
+            'Content-Type': 'text/plain;charset=utf-8' 
+          },
           body: JSON.stringify({ action: action, ...payload }) 
       });
-      const rawText = await response.text();
-      try { return JSON.parse(rawText); } 
-      catch (err) {
-          console.error("HTML Received:", rawText);
-          return { success: false, message: "Server error. Check Apps Script Execution Logs." };
+      
+      // Google returns a 302 redirect. Fetch follows it, but we need to check if it's okay.
+      if (!response.ok) {
+          throw new Error(`HTTP Error: ${response.status}`);
       }
-  } catch (e) { return { success: false, message: "Network Error: " + e.message }; }
+
+      const rawText = await response.text();
+      return JSON.parse(rawText);
+  } catch (e) { 
+      console.error("API Error:", e);
+      return { success: false, message: "Connection Error: " + e.message }; 
+  }
 }
 
 // --- 2. NAVIGATION ---
