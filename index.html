@@ -169,13 +169,28 @@
       let currentRole = "";
       let editingRow = null; // Stores row number if admin is correcting an entry
 
+// --- CORE API COMMUNICATION FUNCTION (UPGRADED) ---
       async function apiCall(action, payload) {
         try {
-            const response = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: action, ...payload }) });
-            return await response.json();
-        } catch (e) { alert("Network Error"); return { success: false }; }
+            const response = await fetch(API_URL, { 
+                method: 'POST', 
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // Forces Google to bypass CORS blocks
+                body: JSON.stringify({ action: action, ...payload }) 
+            });
+            
+            const rawText = await response.text(); // Read exactly what Google sent back
+            
+            try {
+                return JSON.parse(rawText); // Try to read it as data
+            } catch (err) {
+                // If it fails, Google sent an HTML error page! 
+                console.error("GOOGLE SENT HTML INSTEAD OF DATA:", rawText);
+                return { success: false, message: "Google blocked the request. Check the browser console (Ctrl+Shift+I) for the exact error." };
+            }
+        } catch (e) { 
+            return { success: false, message: "Fetch failed: " + e.message }; 
+        }
       }
-
       function switchTab(tab) {
         document.getElementById('dashboard-view').style.display = (tab === 'dashboard') ? 'block' : 'none';
         document.getElementById('report-view').style.display = (tab === 'report') ? 'block' : 'none';
@@ -330,7 +345,7 @@
           if(confirm(`Delete user ${username}?`)) { await apiCall('deleteUser', { username: username }); loadUsers(); }
       }
 
-     // --- REPORT GENERATION LOGIC ---
+// --- REPORT GENERATION LOGIC (UPGRADED) ---
       async function generateReport() {
         const selectedMonth = document.getElementById('report-month-picker').value; 
         if(!selectedMonth) { alert("Please select a month and year first."); return; }
@@ -342,8 +357,12 @@
         
         btn.innerHTML = "Calculate & Generate"; btn.disabled = false;
         
-        if (response.success) renderReport(response.data || response, selectedMonth);
-        else alert("Error generating report: " + response.message);
+        if (response.success) {
+            renderReport(response.data || response, selectedMonth);
+        } else {
+            // This safely grabs the error whether it is labeled 'message' or 'error'
+            alert("Error generating report: " + (response.message || response.error || "Unknown Error"));
+        }
       }
 
       function renderReport(data, selectedMonth) {
