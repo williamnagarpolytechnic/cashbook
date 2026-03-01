@@ -8,8 +8,10 @@ let activeBanks = [];
 
 // --- 1. CORE API CALL ---
 async function apiCall(action, payload) {
+  // Turn ON the spinner overlay
+  document.getElementById('loading-overlay').style.display = 'flex';
+  
   try {
-      // We only fire ONE fetch request now!
       const response = await fetch(API_URL, { 
           method: 'POST', 
           headers: { 'Content-Type': 'text/plain;charset=utf-8' },
@@ -17,14 +19,13 @@ async function apiCall(action, payload) {
       });
       
       const rawText = await response.text();
-      try { 
-          return JSON.parse(rawText); 
-      } catch (err) {
-          console.error("HTML Received:", rawText);
-          return { success: false, message: "Server error parsing response." };
-      }
+      try { return JSON.parse(rawText); } 
+      catch (err) { return { success: false, message: "Server error parsing response." }; }
   } catch (e) { 
       return { success: false, message: "Network Error: " + e.message }; 
+  } finally {
+      // Turn OFF the spinner overlay, whether it succeeded or failed
+      document.getElementById('loading-overlay').style.display = 'none';
   }
 }
 
