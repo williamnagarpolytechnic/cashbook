@@ -9,44 +9,43 @@
     <style>
         /* --- PRINTING RULES --- */
         @media print {
-            /* 1. Hide everything that isn't the report */
-            /* Add any other IDs or classes you want to hide here */
-            button, input, select, .admin-panel, #login-view, #loading-overlay {
+            /* 1. Hide UI Elements */
+            button, input, select, .admin-panel, #login-view, #loading-overlay, .no-print {
                 display: none !important; 
             }
         
-            /* 2. Kill the scrollbars and let the table expand to its full height */
-            body, html, .table-container, #report-view {
+            /* 2. The "Nuclear Option" for Scrollbars */
+            /* The asterisk targets literally EVERY element on the page */
+            * {
                 overflow: visible !important;
-                height: auto !important;
-                margin: 0 !important;
-                padding: 0 !important;
             }
         
-            /* 3. Force the table headers to repeat on every new printed page */
-            thead {
-                display: table-header-group !important;
-            }
-        
-            /* 4. Stop table rows from being chopped in half at the bottom of a page */
-            tr {
-                page-break-inside: avoid !important;
-            }
-        
-            /* 5. Set the page size and margins (Landscape is usually best for Cash Books) */
-            @page {
-                size: A4 landscape;
-                margin: 15mm;
-            }
-        
-            /* Make the table borders crisp and black for the printer */
+            /* 3. Force Table to Fit the Physical Page */
             table {
                 width: 100% !important;
+                max-width: 100% !important;
+                table-layout: fixed !important; /* Forces columns to obey the page width */
                 border-collapse: collapse !important;
             }
+        
+            /* 4. Shrink Text and Wrap Words to Save Space */
             th, td {
                 border: 1px solid #000 !important;
-                color: #000 !important; /* Forces text to be black, saving color ink */
+                color: #000 !important; /* Black ink only */
+                font-size: 10px !important; /* Shrink text to fit more bank columns */
+                word-wrap: break-word !important; /* Force long text to wrap to a new line */
+                white-space: normal !important;
+                padding: 4px !important; /* Reduce padding to save space */
+            }
+        
+            /* 5. Ensure Headers Repeat on New Pages */
+            thead { display: table-header-group !important; }
+            tr { page-break-inside: avoid !important; }
+        
+            /* 6. Page Setup */
+            @page {
+                size: A4 landscape;
+                margin: 10mm; /* Slightly smaller margins to give the table more room */
             }
         }
     </style>
