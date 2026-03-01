@@ -77,7 +77,11 @@ async function attemptLogin() {
 function updateBankDropdowns() {
   const methodDropdown = document.getElementById('entry-method');
   if(!methodDropdown) return;
-  methodDropdown.innerHTML = `<option value="Cash">Cash</option>`;
+  
+  // Add the disabled default option first
+  methodDropdown.innerHTML = `<option value="" disabled selected>Select Method...</option>`;
+  methodDropdown.innerHTML += `<option value="Cash">Cash</option>`;
+  
   activeBanks.forEach(bank => {
       methodDropdown.innerHTML += `<option value="${bank}">${bank}</option>`;
   });
