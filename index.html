@@ -6,6 +6,50 @@
     <title>Office Cash Book System</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* --- PRINTING RULES --- */
+        @media print {
+            /* 1. Hide everything that isn't the report */
+            /* Add any other IDs or classes you want to hide here */
+            button, input, select, .admin-panel, #login-view, #loading-overlay {
+                display: none !important; 
+            }
+        
+            /* 2. Kill the scrollbars and let the table expand to its full height */
+            body, html, .table-container, #report-view {
+                overflow: visible !important;
+                height: auto !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+        
+            /* 3. Force the table headers to repeat on every new printed page */
+            thead {
+                display: table-header-group !important;
+            }
+        
+            /* 4. Stop table rows from being chopped in half at the bottom of a page */
+            tr {
+                page-break-inside: avoid !important;
+            }
+        
+            /* 5. Set the page size and margins (Landscape is usually best for Cash Books) */
+            @page {
+                size: A4 landscape;
+                margin: 15mm;
+            }
+        
+            /* Make the table borders crisp and black for the printer */
+            table {
+                width: 100% !important;
+                border-collapse: collapse !important;
+            }
+            th, td {
+                border: 1px solid #000 !important;
+                color: #000 !important; /* Forces text to be black, saving color ink */
+            }
+        }
+    </style>
 </head>
 <body>
     
