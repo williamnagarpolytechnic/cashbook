@@ -97,16 +97,41 @@ function renderAdminBankList() {
 }
 
 async function addNewBank() {
-    const newBank = document.getElementById('new-bank-name').value.trim();
-    if(!newBank) return;
-    const res = await apiCall('addBank', { bankName: newBank });
-    if(res.success) {
-        activeBanks = res.data;
-        document.getElementById('new-bank-name').value = '';
-        updateBankDropdowns();
-        renderAdminBankList();
-        const dataRes = await apiCall('getLedgerData', {});
-        if(dataRes.success) updateTable(dataRes.data);
+    const input = document.getElementById('new-bank-name');
+    const btn = document.getElementById('btn-add-bank');
+    const newBank = input.value.trim();
+    
+    if(!newBank) return alert("Please enter a bank name.");
+
+    // THE SHIELD: Freeze the button and show visual feedback
+    const originalText = btn.innerHTML;
+    btn.innerHTML = "Adding...";
+    btn.disabled = true;
+    btn.style.opacity = "0.7";
+
+    try {
+        const res = await apiCall('addBank', { bankName: newBank });
+        
+        if(res.success) {
+            activeBanks = res.data;
+            input.value = ''; // Clear the input box
+            updateBankDropdowns();
+            renderAdminBankList();
+            
+            // Refresh dashboard boxes
+            const dataRes = await apiCall('getLedgerData', {});
+            if(dataRes.success) updateTable(dataRes.data);
+        } else {
+            // If the backend bouncer blocked it, show the warning
+            alert(res.message); 
+        }
+    } catch (e) {
+        alert("Connection error while adding bank.");
+    } finally {
+        // UNFREEZE THE BUTTON: Always return it to normal
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+        btn.style.opacity = "1";
     }
 }
 
