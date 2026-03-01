@@ -190,13 +190,27 @@ async function submitNewEntry() {
     type: document.getElementById('entry-type').value,
     amount: document.getElementById('entry-amount').value
   };
-  if(!entryData.date || !entryData.details || !entryData.amount) return alert("Fill all fields");
+  
+  // Strict Validation: Checks if ANY field is empty or left on "Select..."
+  if(!entryData.date || !entryData.details || !entryData.amount || !entryData.method || !entryData.type) {
+      return alert("Please fill all fields and select dropdown options.");
+  }
   
   let res = editingRow ? await apiCall('updateTransaction', { rowNum: editingRow, entryData, userName: currentUser }) : await apiCall('addEntry', { entryData, userName: currentUser });
 
   if (res.success) {
       updateTable(res.data);
       cancelEdit();
+      
+      // CLEAR FIELDS AFTER SUCCESS
+      document.getElementById('entry-details').value = '';
+      document.getElementById('entry-voucher').value = '';
+      document.getElementById('entry-amount').value = '';
+      document.getElementById('entry-method').value = ''; // Resets to Select Method...
+      document.getElementById('entry-type').value = '';   // Resets to Select Type...
+      // Note: We leave the Date field alone, as users often enter multiple items for the same day.
+  } else {
+      alert(res.message);
   }
 }
 
@@ -320,9 +334,27 @@ async function changePass(username) {
     }
 }
 async function addNewUser() {
-    const userData = { user: document.getElementById('new-user').value, pass: document.getElementById('new-pass').value, name: document.getElementById('new-name').value, role: document.getElementById('new-role').value };
-    await apiCall('addUser', { userData });
-    loadUsers();
+    const userData = { 
+        user: document.getElementById('new-user').value, 
+        pass: document.getElementById('new-pass').value, 
+        name: document.getElementById('new-name').value, 
+        role: document.getElementById('new-role').value 
+    };
+    
+    if(!userData.user || !userData.pass || !userData.name) return alert("Fill all fields!");
+
+    const res = await apiCall('addUser', { userData });
+    if(res.success) {
+        loadUsers();
+        // CLEAR FIELDS AFTER SUCCESS
+        document.getElementById('new-user').value = '';
+        document.getElementById('new-pass').value = '';
+        document.getElementById('new-name').value = '';
+        document.getElementById('new-role').value = 'cashier';
+    } else {
+        alert("Error adding user: " + res.message);
+    }
 }
+
 async function delUser(u) { if(confirm("Delete user?")) { await apiCall('deleteUser', { username: u }); loadUsers(); } }
 
