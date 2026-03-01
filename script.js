@@ -6,30 +6,25 @@ let currentRole = "";
 let editingRow = null; 
 let activeBanks = []; 
 
+// --- 1. CORE API CALL ---
 async function apiCall(action, payload) {
   try {
-      // Use URLSearchParams to send data as 'application/x-www-form-urlencoded'
-      // This bypasses the OPTIONS preflight check that causes 405 errors
+      // We only fire ONE fetch request now!
       const response = await fetch(API_URL, { 
           method: 'POST', 
-          mode: 'no-cors', // Tells browser to just send it and not wait for a security 'OK'
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
           body: JSON.stringify({ action: action, ...payload }) 
       });
-
-      // NOTE: With 'no-cors', we can't read the response. 
-      // So for LOGIN specifically, we must use standard 'cors' but with text/plain.
       
-      const standardResponse = await fetch(API_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify({ action: action, ...payload })
-      });
-      
-      const rawText = await standardResponse.text();
-      return JSON.parse(rawText);
+      const rawText = await response.text();
+      try { 
+          return JSON.parse(rawText); 
+      } catch (err) {
+          console.error("HTML Received:", rawText);
+          return { success: false, message: "Server error parsing response." };
+      }
   } catch (e) { 
-      return { success: false, message: "Connection Error: " + e.message }; 
+      return { success: false, message: "Network Error: " + e.message }; 
   }
 }
 
