@@ -9,43 +9,47 @@
     <style>
         /* --- PRINTING RULES --- */
         @media print {
-            /* 1. Hide UI Elements */
-            button, input, select, .admin-panel, #login-view, #loading-overlay, .no-print {
+            /* 1. Hide UI Elements & Navigation */
+            button, input, select, .admin-panel, #login-view, #loading-overlay, .no-print, .nav-bar {
                 display: none !important; 
             }
         
-            /* 2. The "Nuclear Option" for Scrollbars */
-            /* The asterisk targets literally EVERY element on the page */
+            /* 2. The "Nuclear Option" for Scrollbars and Heights */
             * {
                 overflow: visible !important;
+                height: auto !important; 
+            }
+            body, html {
+                margin: 0 !important;
+                padding: 0 !important;
+                background: white !important;
             }
         
-            /* 3. Force Table to Fit the Physical Page */
+            /* 3. Force Table to Fit */
             table {
                 width: 100% !important;
                 max-width: 100% !important;
-                table-layout: fixed !important; /* Forces columns to obey the page width */
+                table-layout: fixed !important; 
                 border-collapse: collapse !important;
             }
         
-            /* 4. Shrink Text and Wrap Words to Save Space */
+            /* 4. Shrink Text */
             th, td {
                 border: 1px solid #000 !important;
-                color: #000 !important; /* Black ink only */
-                font-size: 10px !important; /* Shrink text to fit more bank columns */
-                word-wrap: break-word !important; /* Force long text to wrap to a new line */
+                color: #000 !important; 
+                font-size: 10px !important; 
+                word-wrap: break-word !important; 
                 white-space: normal !important;
-                padding: 4px !important; /* Reduce padding to save space */
+                padding: 4px !important; 
             }
         
-            /* 5. Ensure Headers Repeat on New Pages */
+            /* 5. Pagination Rules */
             thead { display: table-header-group !important; }
             tr { page-break-inside: avoid !important; }
-        
-            /* 6. Page Setup */
+            
             @page {
-                size: A4 landscape;
-                margin: 10mm; /* Slightly smaller margins to give the table more room */
+                size: A4 portrait; /* Portrait is better for linear statements */
+                margin: 10mm; 
             }
         }
     </style>
@@ -190,7 +194,7 @@
       </div>
 
     <div id="statement-view" style="display: none;">        
-        <div class="card" style="display: flex; gap: 15px; align-items: flex-end; background-color: #fdfdfd; flex-wrap: wrap;">
+        <div class="card no-print" style="display: flex; gap: 15px; align-items: flex-end; background-color: #fdfdfd; flex-wrap: wrap;">
           <div>
             <label style="font-size: 12px; font-weight: bold; color: #7f8c8d;">Report Type:</label><br>
             <select id="stmt-type" onchange="updateStmtDropdown()" style="margin:0; padding:8px;">
