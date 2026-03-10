@@ -430,7 +430,28 @@ function renderReport(data, month) {
 
 function downloadPDF() {
   const element = document.getElementById('report-print-area');
-  html2pdf().from(element).set({ margin: 0.5, filename: 'Report.pdf', jsPDF: { orientation: 'landscape' } }).save();
+  
+  // 1. Temporarily remove the scrolling wrapper so it doesn't clip wide tables
+  element.classList.remove('table-wrapper');
+  
+  // 2. The Bulletproof PDF Configuration
+  const opt = {
+    margin:       [0.5, 0.5, 0.5, 0.5], // Exact margins: [top, right, bottom, left]
+    filename:     'Monthly_Cash_Book_Report.pdf',
+    image:        { type: 'jpeg', quality: 0.98 },
+    html2canvas:  { scale: 2 },
+    jsPDF:        { unit: 'in', format: 'a4', orientation: 'landscape' },
+    pagebreak:    { mode: 'css', avoid: 'tr' } // <--- THE MAGIC FIX: Prevents slicing rows!
+  };
+
+  html2pdf()
+    .from(element)
+    .set(opt)
+    .save()
+    .then(() => {
+        // 3. Put the scrolling wrapper back instantly
+        element.classList.add('table-wrapper');
+    });
 }
 
 // --- 7. ADMIN USER LOGIC ---
@@ -578,19 +599,25 @@ function renderStatement(data, type, item) {
 function downloadStatementPDF() {
   const element = document.getElementById('stmt-print-area');
   
-  // 1. Temporarily remove the scrolling wrapper so the PDF engine doesn't chop the image
+  // 1. Temporarily remove the scrolling wrapper
   element.classList.remove('table-wrapper');
   
+  // 2. The Bulletproof PDF Configuration
+  const opt = {
+    margin:       [0.5, 0.5, 0.5, 0.5], // Exact margins: [top, right, bottom, left] in inches
+    filename:     'Account_Statement.pdf',
+    image:        { type: 'jpeg', quality: 0.98 },
+    html2canvas:  { scale: 2 },
+    jsPDF:        { unit: 'in', format: 'a4', orientation: 'landscape' },
+    pagebreak:    { mode: 'css', avoid: 'tr' } // <--- THE MAGIC FIX: Prevents slicing rows in half!
+  };
+
   html2pdf()
     .from(element)
-    .set({ 
-        margin: 0.5, 
-        filename: 'Account_Statement.pdf', 
-        jsPDF: { orientation: 'landscape' } // 2. Set to landscape to fit all 8 columns!
-    })
+    .set(opt)
     .save()
     .then(() => {
-        // 3. Put the scrolling wrapper back instantly so your website stays normal
+        // 3. Put the scrolling wrapper back instantly
         element.classList.add('table-wrapper');
     });
 }
