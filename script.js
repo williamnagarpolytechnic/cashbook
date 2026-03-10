@@ -577,8 +577,20 @@ function renderStatement(data, type, item) {
 
 function downloadStatementPDF() {
   const element = document.getElementById('stmt-print-area');
+  
+  // 1. Temporarily remove the scrolling wrapper so the PDF engine doesn't chop the image
+  element.classList.remove('table-wrapper');
+  
   html2pdf()
     .from(element)
-    .set({ margin: 0.5, filename: 'Account_Statement.pdf', jsPDF: { orientation: 'portrait' } })
-    .save();
+    .set({ 
+        margin: 0.5, 
+        filename: 'Account_Statement.pdf', 
+        jsPDF: { orientation: 'landscape' } // 2. Set to landscape to fit all 8 columns!
+    })
+    .save()
+    .then(() => {
+        // 3. Put the scrolling wrapper back instantly so your website stays normal
+        element.classList.add('table-wrapper');
+    });
 }
