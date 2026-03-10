@@ -83,7 +83,7 @@ async function attemptLogin() {
     loadFundsAndCategories();
     
     const dataRes = await apiCall('getLedgerData', {});
-    if(dataRes.success) (dataRes.data);
+    if(dataRes.success) updateTable(dataRes.data);
     
   } else {
     btn.innerHTML = "Secure Login"; btn.disabled = false;
