@@ -215,29 +215,35 @@ function updateTable(data) {
   let balances = { "Cash": 0 };
   activeBanks.forEach(b => balances[b] = 0);
 
-  data.forEach(row => {
+data.forEach(row => {
       let method = row[4].toString().trim();
+      
+      // 1. Strip the commas out of ALL numbers before doing any math!
       let rec = parseFloat(String(row[5]).replace(/,/g, '')) || 0;
       let pay = parseFloat(String(row[6]).replace(/,/g, '')) || 0;
+      let cashBal = parseFloat(String(row[7]).replace(/,/g, '')) || 0;
+      let bankBal = parseFloat(String(row[8]).replace(/,/g, '')) || 0;
       
       if(balances[method] !== undefined) balances[method] += (rec - pay);
       else if (method && method !== "Cash") balances[method] = (balances[method] || 0) + (rec - pay);
 
-      // ADDED row[10] (Fund) and row[11] (Category) to match your new HTML table headers!
       let tr = `<tr>
-          <td>${row[1]}</td>  <td>${row[2]}</td>  <td>${row[10] || ''}</td> <td>${row[11] || ''}</td> <td>${row[3]}</td>  <td>${row[4]}</td>  <td>${row[5]}</td>  <td>${row[6]}</td>  <td class="bal-col">${parseFloat(row[7]).toFixed(2)}</td> <td class="bal-col">${parseFloat(row[8]).toFixed(2)}</td> <td>${row[9]}</td>  `;
-          
-        if(currentRole === 'admin') {
-           // Actions (Edit/Delete) use row[12] which is the hidden Row Number
-           tr += `<td>
-              <button class="btn-warning" onclick="loadTransactionForEdit(${row[12]}, '${row[1]}', '${row[2]}', '${row[3]}', '${row[4]}', ${parseFloat(row[5]||0)}, ${parseFloat(row[6]||0)})">Edit</button> 
-              <button class="btn-danger" onclick="deleteTx(${row[12]})">Del</button>
-           </td>`;
-        } else {
-           tr += `<td></td>`; // Blank actions column for normal cashiers
-        }
-        tr += `</tr>`; 
-        tbody.innerHTML += tr;
+        <td>${row[1]}</td>  <td>${row[2]}</td>  <td>${row[10] || ''}</td> <td>${row[11] || ''}</td> <td>${row[3]}</td>  <td>${row[4]}</td>  <td>${row[5]}</td>  <td>${row[6]}</td>  <td class="bal-col">${cashBal.toFixed(2)}</td>
+        <td class="bal-col">${bankBal.toFixed(2)}</td>
+        
+        <td>${row[9]}</td>  `;
+        
+      if(currentRole === 'admin') {
+         // 3. Use the clean 'rec' and 'pay' variables so the Edit button doesn't drop zeros!
+         tr += `<td>
+            <button class="btn-warning" onclick="loadTransactionForEdit(${row[12]}, '${row[1]}', '${row[2]}', '${row[3]}', '${row[4]}', ${rec}, ${pay})">Edit</button> 
+            <button class="btn-danger" onclick="deleteTx(${row[12]})">Del</button>
+         </td>`;
+      } else {
+         tr += `<td></td>`; 
+      }
+      tr += `</tr>`; 
+      tbody.innerHTML += tr;
   });
 
   // Render Summary Boxes
