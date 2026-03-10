@@ -577,24 +577,8 @@ function renderStatement(data, type, item) {
 
 function downloadStatementPDF() {
   const element = document.getElementById('stmt-print-area');
-  
-  // Strip the scrolling wrapper so it doesn't clip
-  const originalClass = element.className;
-  element.className = "card"; 
-  
-  const opt = {
-    margin: 0.5,
-    filename: 'Account_Statement.pdf',
-    html2canvas: { 
-        scale: 2, 
-        scrollY: 0, 
-        windowHeight: element.scrollHeight // <-- THE MAGIC FIX: Forces it to read the full hidden height
-    },
-    jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
-  };
-
-  html2pdf().from(element).set(opt).save().then(() => {
-     // Put the UI back to normal after the download finishes
-     element.className = originalClass;
-  });
+  html2pdf()
+    .from(element)
+    .set({ margin: 0.5, filename: 'Account_Statement.pdf', jsPDF: { orientation: 'portrait' } })
+    .save();
 }
