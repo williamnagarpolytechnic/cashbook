@@ -136,36 +136,6 @@ function updateFundUI() {
         });
         if (currentValue && globalActiveFunds.includes(currentValue)) fundSelect.value = currentValue;
     }
-
-    // 2. Paint the Dashboard Mini-Trackers
-    const boxesContainer = document.getElementById('dynamic-summary-boxes');
-    if (!boxesContainer) return;
-
-    // Create the tracker row if it doesn't exist yet
-    let fundBoxesContainer = document.getElementById('fund-summary-boxes');
-    if (!fundBoxesContainer) {
-        fundBoxesContainer = document.createElement('div');
-        fundBoxesContainer.id = 'fund-summary-boxes';
-        fundBoxesContainer.className = 'summary-container';
-        fundBoxesContainer.style.marginTop = '15px';
-        boxesContainer.parentNode.insertBefore(fundBoxesContainer, boxesContainer.nextSibling);
-    }
-
-    fundBoxesContainer.innerHTML = ''; 
-    globalActiveFunds.forEach(fund => {
-        let bal = globalFundBalances[fund] || 0;
-        let isNegative = bal < 0;
-        let isExhausted = bal === 0;
-
-        // Auto-changing colors based on balance state!
-        let bgColor = isNegative ? '#ffcccc' : (isExhausted ? '#fff3cd' : '#e8f8f5');
-        let textColor = isNegative ? '#c0392b' : (isExhausted ? '#d35400' : '#16a085');
-
-        fundBoxesContainer.innerHTML += `<div class="summary-box" style="background-color: ${bgColor}; color: ${textColor}; border: 1px solid ${textColor}; padding: 10px; flex: 1; min-width: 140px;">
-          <div style="font-size:11px; font-weight:bold; text-transform:uppercase;">${fund}</div>
-          <h3 style="margin:5px 0 0 0;">₹${bal.toFixed(2)}</h3>
-        </div>`;
-    });
 }
 
 // --- UNIFIED ADMIN LIST MANAGER ---
