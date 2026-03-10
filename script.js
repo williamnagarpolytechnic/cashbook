@@ -230,12 +230,14 @@ async function submitNewEntry() {
     voucher: document.getElementById('entry-voucher').value,
     method: document.getElementById('entry-method').value,
     type: document.getElementById('entry-type').value,
-    amount: document.getElementById('entry-amount').value
+    amount: document.getElementById('entry-amount').value,
+    fund: document.getElementById('entry-fund').value,           // <-- NEW
+    category: document.getElementById('entry-category').value    // <-- NEW
   };
   
-  // Strict Validation: Checks if ANY field is empty or left on "Select..."
-  if(!entryData.date || !entryData.details || !entryData.amount || !entryData.method || !entryData.type) {
-      return alert("Please fill all fields and select dropdown options.");
+  // Strict Validation: Checks if ANY required field is empty (Added fund)
+  if(!entryData.date || !entryData.details || !entryData.amount || !entryData.method || !entryData.type || !entryData.fund) {
+      return alert("Please fill all required fields and select dropdown options.");
   }
   
   let res = editingRow ? await apiCall('updateTransaction', { rowNum: editingRow, entryData, userName: currentUser }) : await apiCall('addEntry', { entryData, userName: currentUser });
@@ -248,9 +250,10 @@ async function submitNewEntry() {
       document.getElementById('entry-details').value = '';
       document.getElementById('entry-voucher').value = '';
       document.getElementById('entry-amount').value = '';
-      document.getElementById('entry-method').value = ''; // Resets to Select Method...
-      document.getElementById('entry-type').value = '';   // Resets to Select Type...
-      // Note: We leave the Date field alone, as users often enter multiple items for the same day.
+      document.getElementById('entry-method').value = ''; 
+      document.getElementById('entry-type').value = '';   
+      document.getElementById('entry-fund').value = '';      // <-- NEW
+      document.getElementById('entry-category').value = '';  // <-- NEW
   } else {
       alert(res.message);
   }
