@@ -202,6 +202,31 @@
           </table>
         </div>
 
+<div class="card">
+          <h3 style="margin-top:0;">Manage Funds</h3>
+          <p style="font-size: 12px; color: #666; margin-bottom: 10px;">Mark funds as 'Closed' when empty to hide them from the data entry form.</p>
+          <div class="entry-form-row" style="margin-bottom: 15px;">
+            <input type="text" id="new-fund-name" placeholder="Enter fund name (e.g. UGC Grant)">
+            <button onclick="addNewFund()" id="btn-add-fund" style="background-color:#8e44ad; flex: 0 1 150px;">Add Fund</button>
+          </div>
+          <table style="width: 100%; max-width: 600px;">
+            <thead><tr><th>Fund Name</th><th>Status</th><th style="width: 100px;">Actions</th></tr></thead>
+            <tbody id="funds-body"></tbody>
+          </table>
+        </div>
+
+        <div class="card">
+          <h3 style="margin-top:0;">Manage Expense Categories</h3>
+          <div class="entry-form-row" style="margin-bottom: 15px;">
+            <input type="text" id="new-category-name" placeholder="Enter category (e.g. Equipment)">
+            <button onclick="addNewCategory()" id="btn-add-cat" style="background-color:#d35400; flex: 0 1 150px;">Add Category</button>
+          </div>
+          <table style="width: 100%; max-width: 500px;">
+            <thead><tr><th>Category</th><th style="width: 80px;">Actions</th></tr></thead>
+            <tbody id="categories-body"></tbody>
+          </table>
+        </div>
+          
         <div class="card">
           <h3 style="margin-top:0;">Add New User</h3>
           <div class="entry-form-row">
