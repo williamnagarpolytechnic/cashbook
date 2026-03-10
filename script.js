@@ -211,26 +211,19 @@ function updateTable(data) {
 
       // ADDED row[10] (Fund) and row[11] (Category) to match your new HTML table headers!
       let tr = `<tr>
-        <td>${row[1]}</td>
-        <td>${row[2]}</td>
-        <td>${row[10] || ''}</td> 
-        <td>${row[11] || ''}</td>
-        <td>${row[3]}</td>
-        <td>${row[4]}</td>
-        <td>${row[5]}</td>
-        <td>${row[6]}</td>
-        <td class="bal-col">${parseFloat(row[7]).toFixed(2)}</td>
-        <td class="bal-col">${parseFloat(row[8]).toFixed(2)}</td>
-        <td>${row[9]}</td>`;
-        
-      if(currentRole === 'admin') {
-         // Shifted row ID from row[10] to row[12] because we added two columns
-         tr += `<td>
-            <button class="btn-warning" onclick="loadTransactionForEdit(${row[12]}, '${row[1]}', '${row[2]}', '${row[3]}', '${row[4]}', ${parseFloat(row[5]||0)}, ${parseFloat(row[6]||0)})">Edit</button> 
-            <button class="btn-danger" onclick="deleteTx(${row[12]})">Del</button>
-         </td>`;
-      }
-      tr += `</tr>`; tbody.innerHTML += tr;
+          <td>${row[1]}</td>  <td>${row[2]}</td>  <td>${row[10] || ''}</td> <td>${row[11] || ''}</td> <td>${row[3]}</td>  <td>${row[4]}</td>  <td>${row[5]}</td>  <td>${row[6]}</td>  <td class="bal-col">${parseFloat(row[7]).toFixed(2)}</td> <td class="bal-col">${parseFloat(row[8]).toFixed(2)}</td> <td>${row[9]}</td>  `;
+          
+        if(currentRole === 'admin') {
+           // Actions (Edit/Delete) use row[12] which is the hidden Row Number
+           tr += `<td>
+              <button class="btn-warning" onclick="loadTransactionForEdit(${row[12]}, '${row[1]}', '${row[2]}', '${row[3]}', '${row[4]}', ${parseFloat(row[5]||0)}, ${parseFloat(row[6]||0)})">Edit</button> 
+              <button class="btn-danger" onclick="deleteTx(${row[12]})">Del</button>
+           </td>`;
+        } else {
+           tr += `<td></td>`; // Blank actions column for normal cashiers
+        }
+        tr += `</tr>`; 
+        tbody.innerHTML += tr;
   });
 
   // Render Summary Boxes
