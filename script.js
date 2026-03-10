@@ -209,9 +209,26 @@ function updateTable(data) {
       if(balances[method] !== undefined) balances[method] += (rec - pay);
       else if (method && method !== "Cash") balances[method] = (balances[method] || 0) + (rec - pay);
 
-      let tr = `<tr><td>${row[1]}</td><td>${row[2]}</td><td>${row[3]}</td><td>${row[4]}</td><td>${row[5]}</td><td>${row[6]}</td><td class="bal-col">${parseFloat(row[7]).toFixed(2)}</td><td class="bal-col">${parseFloat(row[8]).toFixed(2)}</td><td>${row[9]}</td>`;
+      // ADDED row[10] (Fund) and row[11] (Category) to match your new HTML table headers!
+      let tr = `<tr>
+        <td>${row[1]}</td>
+        <td>${row[2]}</td>
+        <td>${row[10] || ''}</td> 
+        <td>${row[11] || ''}</td>
+        <td>${row[3]}</td>
+        <td>${row[4]}</td>
+        <td>${row[5]}</td>
+        <td>${row[6]}</td>
+        <td class="bal-col">${parseFloat(row[7]).toFixed(2)}</td>
+        <td class="bal-col">${parseFloat(row[8]).toFixed(2)}</td>
+        <td>${row[9]}</td>`;
+        
       if(currentRole === 'admin') {
-         tr += `<td><button class="btn-warning" onclick="loadTransactionForEdit(${row[10]}, '${row[1]}', '${row[2]}', '${row[3]}', '${row[4]}', ${parseFloat(row[5]||0)}, ${parseFloat(row[6]||0)})">Edit</button> <button class="btn-danger" onclick="deleteTx(${row[10]})">Del</button></td>`;
+         // Shifted row ID from row[10] to row[12] because we added two columns
+         tr += `<td>
+            <button class="btn-warning" onclick="loadTransactionForEdit(${row[12]}, '${row[1]}', '${row[2]}', '${row[3]}', '${row[4]}', ${parseFloat(row[5]||0)}, ${parseFloat(row[6]||0)})">Edit</button> 
+            <button class="btn-danger" onclick="deleteTx(${row[12]})">Del</button>
+         </td>`;
       }
       tr += `</tr>`; tbody.innerHTML += tr;
   });
