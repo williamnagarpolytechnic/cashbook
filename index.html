@@ -72,8 +72,10 @@
         <div class="nav-buttons">
           <button id="nav-dash" class="active" onclick="switchTab('dashboard')">Dashboard</button>
           <button id="nav-rep" onclick="switchTab('report')">Folio Report</button>
+          <button id="nav-stmt" onclick="switchTab('statement')">Account Statements</button>           
           <button id="nav-admin" onclick="switchTab('admin')" style="display:none; background-color:#8e44ad;">Admin Panel</button>
         </div>
+          
         <div>
           <span id="welcome-text" style="font-weight: bold; margin-right: 15px; color:#2c3e50;"></span>
           <button class="btn-danger" onclick="location.reload()">Log Out</button>
@@ -187,8 +189,71 @@
         </div>
       </div>
 
-      <div id="admin-view" style="display:none;">
+    <div id="statement-view" style="display: none;">        
+        <div class="card" style="display: flex; gap: 15px; align-items: flex-end; background-color: #fdfdfd; flex-wrap: wrap;">
+          <div>
+            <label style="font-size: 12px; font-weight: bold; color: #7f8c8d;">Report Type:</label><br>
+            <select id="stmt-type" onchange="updateStmtDropdown()" style="margin:0; padding:8px;">
+              <option value="fund">Fund Statement</option>
+              <option value="category">Category Statement</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size: 12px; font-weight: bold; color: #7f8c8d;">Select Item:</label><br>
+            <select id="stmt-item" style="margin:0; padding:8px; min-width: 150px;">
+              <option value="">Loading...</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size: 12px; font-weight: bold; color: #7f8c8d;">From Date:</label><br>
+            <input type="date" id="stmt-from" style="margin:0; padding:8px;">
+          </div>
+          <div>
+            <label style="font-size: 12px; font-weight: bold; color: #7f8c8d;">To Date:</label><br>
+            <input type="date" id="stmt-to" style="margin:0; padding:8px;">
+          </div>
+          <button onclick="generateStatement()" style="background-color: #2980b9; margin:0;">Generate</button>
+          
+          <div style="margin-left: auto; display: flex; gap: 10px;">
+              <button onclick="downloadStatementPDF()" style="background-color: #d35400; margin:0;">Download PDF</button>
+              <button onclick="window.print()" style="background-color: #7f8c8d; margin:0;">Print</button>
+          </div>
+        </div>
+
+        <div id="stmt-print-area" class="card table-wrapper" style="min-height: 400px; padding: 30px;">
+          <h2 id="stmt-title" style="text-align: center; margin-top: 0;">Account Statement</h2>
+          <p id="stmt-subtitle" style="text-align: center; color: #666; margin-bottom: 20px;">Select filters and generate a report.</p>
+          
+          <table style="width: 100%;">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Particulars</th>
+                <th>Vch/Chq</th>
+                <th>Method</th>
+                <th id="stmt-dynamic-col">Category/Fund</th>
+                <th>Receipts (+)</th>
+                <th>Payments (-)</th>
+                <th>Running Bal.</th>
+              </tr>
+            </thead>
+            <tbody id="stmt-body">
+              <tr><td colspan="8" style="text-align:center; padding: 20px;">No data generated yet.</td></tr>
+            </tbody>
+          </table>
+
+          <div id="stmt-summary-box" style="margin-top: 30px; display: none; padding: 15px; background-color: #f4f6f7; border: 1px solid #bdc3c7; border-radius: 5px;">
+             <h3 id="stmt-summary-title" style="margin-top: 0; font-size: 16px; color: #2c3e50;">Expenditure Breakdown</h3>
+             <table style="width: 50%; max-width: 400px; background-color: white;">
+               <thead><tr><th>Item</th><th>Total Spent</th></tr></thead>
+               <tbody id="stmt-summary-body"></tbody>
+             </table>
+          </div>
+
+        </div>
+      </div>
         
+      <div id="admin-view" style="display:none;">        
         <div class="card">
           <h3 style="margin-top:0;">Manage Bank Accounts</h3>
           <p style="font-size: 12px; color: #666; margin-bottom: 10px;">Add banks here to enable them in the entry dropdown and dashboard boxes.</p>
