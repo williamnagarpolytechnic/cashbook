@@ -83,7 +83,7 @@ async function attemptLogin() {
     loadFundsAndCategories();
     
     const dataRes = await apiCall('getLedgerData', {});
-    if(dataRes.success) updateTable(dataRes.data);
+    if(dataRes.success) (dataRes.data);
     
   } else {
     btn.innerHTML = "Secure Login"; btn.disabled = false;
@@ -263,7 +263,7 @@ data.forEach(row => {
       if(currentRole === 'admin') {
          // 3. Use the clean 'rec' and 'pay' variables so the Edit button doesn't drop zeros!
          tr += `<td>
-            <button class="btn-warning" onclick="loadTransactionForEdit(${row[12]}, '${row[1]}', '${row[2]}', '${row[3]}', '${row[4]}', ${rec}, ${pay})">Edit</button> 
+            <button class="btn-warning" onclick="loadTransactionForEdit(${row[12]}, '${row[1]}', '${row[2]}', '${row[3]}', '${row[4]}', ${rec}, ${pay}, '${row[10] || ''}', '${row[11] || ''}')">Edit</button> 
             <button class="btn-danger" onclick="deleteTx(${row[12]})">Del</button>
          </td>`;
       } else {
@@ -317,7 +317,7 @@ async function submitNewEntry() {
   }
 }
 
-function loadTransactionForEdit(rowNum, date, details, vch, method, rec, pay) {
+function loadTransactionForEdit(rowNum, date, details, vch, method, rec, pay, fund, category) {
   const d = date.split('/');
   document.getElementById('entry-date').value = `${d[2]}-${d[1]}-${d[0]}`;
   document.getElementById('entry-details').value = details;
@@ -325,6 +325,11 @@ function loadTransactionForEdit(rowNum, date, details, vch, method, rec, pay) {
   document.getElementById('entry-method').value = method;
   document.getElementById('entry-type').value = (rec > 0) ? "Receipt" : "Payment";
   document.getElementById('entry-amount').value = (rec > 0) ? rec : pay;
+  
+  // NEW: Load the Fund and Category back into the dropdowns
+  document.getElementById('entry-fund').value = fund || "";
+  document.getElementById('entry-category').value = category || "";
+  
   editingRow = rowNum;
   document.getElementById('submit-btn').innerHTML = "Update Entry";
   document.getElementById('cancel-btn').style.display = "inline-block";
