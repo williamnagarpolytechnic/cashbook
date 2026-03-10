@@ -9,50 +9,41 @@
     <style>
         /* --- PRINTING RULES --- */
         @media print {
-            /* 1. Hide the entire page by default */
-            body * {
-                visibility: hidden !important;
+            /* 1. Hide UI Elements */
+            button, input, select, .admin-panel, #login-view, #loading-overlay, .no-print, .nav-bar {
+                display: none !important; 
             }
-            
-            /* 2. Force the body to be completely unrestricted */
-            body, html, .app-container {
-                height: auto !important;
+        
+            /* 2. The "Nuclear Option" for Scrollbars */
+            * {
                 overflow: visible !important;
-                background: white !important;
-                margin: 0 !important;
-                padding: 0 !important;
             }
-
-            /* 3. Make ONLY the Account Statement and Folio Report visible */
-            #stmt-print-area, #stmt-print-area *,
-            #report-print-area, #report-print-area * {
-                visibility: visible !important;
-            }
-
-            /* 4. Shove the visible report to the absolute top-left of the physical paper */
-            #stmt-print-area, #report-print-area {
-                position: absolute !important;
-                left: 0 !important;
-                top: 0 !important;
-                width: 100% !important;
-                margin: 0 !important;
-                padding: 0 !important;
-                box-shadow: none !important; /* Removes card drop-shadows */
-            }
-
-            /* 5. Force Table to Fit */
+        
+            /* 3. Force Table to Fit the Physical Page */
             table {
                 width: 100% !important;
+                max-width: 100% !important;
                 table-layout: fixed !important; 
                 border-collapse: collapse !important;
             }
         
+            /* 4. Shrink Text and Wrap Words */
             th, td {
                 border: 1px solid #000 !important;
                 color: #000 !important; 
                 font-size: 10px !important; 
                 word-wrap: break-word !important; 
+                white-space: normal !important;
                 padding: 4px !important; 
+            }
+        
+            /* 5. Ensure Headers Repeat on New Pages */
+            thead { display: table-header-group !important; }
+            tr { page-break-inside: avoid !important; }
+        
+            /* 6. Page Setup */
+            @page {
+                margin: 10mm; 
             }
         }
     </style>
