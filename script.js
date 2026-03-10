@@ -39,7 +39,7 @@ function switchTab(tab) {
   document.getElementById('nav-rep').className = (tab === 'report') ? 'active' : '';
   document.getElementById('nav-admin').className = (tab === 'admin') ? 'active' : '';
   
-  if(tab === 'admin') { loadUsers(); renderAdminBankList(); }
+  if(tab === 'admin') { loadUsers(); loadAdminLists(); }
 }
 
 async function loadFundsAndCategories() {
@@ -129,64 +129,78 @@ function updateBankDropdowns() {
     }
 }
 
-function renderAdminBankList() {
-    const tbody = document.getElementById('banks-body');
-    if(!tbody) return;
-    tbody.innerHTML = '';
-    activeBanks.forEach(bank => {
-        tbody.innerHTML += `<tr><td><strong>${bank}</strong></td><td><button class="btn-danger" onclick="delBank('${bank}')">Delete</button></td></tr>`;
-    });
+// --- UNIFIED ADMIN LIST MANAGER ---
+async function loadAdminLists() {
+    const res = await apiCall('getAdminLists', {});
+    if(res.success) renderAdminLists(res.data);
 }
 
+function renderAdminLists(data) {
+    // 1. Update Global Variables & Dropdowns
+    activeBanks = data.banks;
+    updateBankDropdowns();
+    loadFundsAndCategories(); // Refreshes the form dropdowns instantly
+
+    // 2. Render Banks
+    const bBody = document.getElementById('banks-body');
+    if(bBody) {
+        bBody.innerHTML = '';
+        data.banks.forEach(b => bBody.innerHTML += `<tr><td><strong>${b}</strong></td><td><button class="btn-danger" onclick="delBank('${b}')">Delete</button></td></tr>`);
+    }
+
+    // 3. Render Funds (Color coded status!)
+    const fBody = document.getElementById('funds-body');
+    if(fBody) {
+        fBody.innerHTML = '';
+        data.funds.forEach(f => {
+            const statusColor = f.status.toLowerCase() === 'active' ? 'green' : 'red';
+            const btnText = f.status.toLowerCase() === 'active' ? 'Close Fund' : 'Re-Open';
+            fBody.innerHTML += `<tr><td><strong>${f.name}</strong></td><td style="color:${statusColor}; font-weight:bold;">${f.status}</td><td><button class="btn-warning" onclick="toggleFund('${f.name}')">${btnText}</button></td></tr>`;
+        });
+    }
+
+    // 4. Render Categories
+    const cBody = document.getElementById('categories-body');
+    if(cBody) {
+        cBody.innerHTML = '';
+        data.categories.forEach(c => cBody.innerHTML += `<tr><td><strong>${c}</strong></td><td><button class="btn-danger" onclick="delCategory('${c}')">Delete</button></td></tr>`);
+    }
+}
+
+// --- BUTTON ACTIONS ---
 async function addNewBank() {
-    const input = document.getElementById('new-bank-name');
-    const btn = document.getElementById('btn-add-bank');
-    const newBank = input.value.trim();
-    
-    if(!newBank) return alert("Please enter a bank name.");
-
-    // THE SHIELD: Freeze the button and show visual feedback
-    const originalText = btn.innerHTML;
-    btn.innerHTML = "Adding...";
-    btn.disabled = true;
-    btn.style.opacity = "0.7";
-
-    try {
-        const res = await apiCall('addBank', { bankName: newBank });
-        
-        if(res.success) {
-            activeBanks = res.data;
-            input.value = ''; // Clear the input box
-            updateBankDropdowns();
-            renderAdminBankList();
-            
-            // Refresh dashboard boxes
-            const dataRes = await apiCall('getLedgerData', {});
-            if(dataRes.success) updateTable(dataRes.data);
-        } else {
-            // If the backend bouncer blocked it, show the warning
-            alert(res.message); 
-        }
-    } catch (e) {
-        alert("Connection error while adding bank.");
-    } finally {
-        // UNFREEZE THE BUTTON: Always return it to normal
-        btn.innerHTML = originalText;
-        btn.disabled = false;
-        btn.style.opacity = "1";
-    }
+    const v = document.getElementById('new-bank-name').value;
+    if(!v) return;
+    const res = await apiCall('addBank', { bankName: v });
+    if(res.success) { document.getElementById('new-bank-name').value = ''; renderAdminLists(res.data); }
+}
+async function delBank(b) {
+    if(!confirm(`Remove ${b}?`)) return;
+    const res = await apiCall('deleteBank', { bankName: b });
+    if(res.success) renderAdminLists(res.data);
 }
 
-async function delBank(bankName) {
-    if(!confirm(`Remove ${bankName}?`)) return;
-    const res = await apiCall('deleteBank', { bankName: bankName });
-    if(res.success) {
-        activeBanks = res.data;
-        updateBankDropdowns();
-        renderAdminBankList();
-        const dataRes = await apiCall('getLedgerData', {});
-        if(dataRes.success) updateTable(dataRes.data);
-    }
+async function addNewFund() {
+    const v = document.getElementById('new-fund-name').value;
+    if(!v) return;
+    const res = await apiCall('addFund', { fundName: v });
+    if(res.success) { document.getElementById('new-fund-name').value = ''; renderAdminLists(res.data); }
+}
+async function toggleFund(f) {
+    const res = await apiCall('toggleFund', { fundName: f });
+    if(res.success) renderAdminLists(res.data);
+}
+
+async function addNewCategory() {
+    const v = document.getElementById('new-category-name').value;
+    if(!v) return;
+    const res = await apiCall('addCategory', { categoryName: v });
+    if(res.success) { document.getElementById('new-category-name').value = ''; renderAdminLists(res.data); }
+}
+async function delCategory(c) {
+    if(!confirm(`Remove ${c}?`)) return;
+    const res = await apiCall('deleteCategory', { categoryName: c });
+    if(res.success) renderAdminLists(res.data);
 }
 
 // --- 5. TRANSACTION LOGIC ---
