@@ -9,47 +9,50 @@
     <style>
         /* --- PRINTING RULES --- */
         @media print {
-            /* 1. Hide UI Elements & Navigation */
-            button, input, select, .admin-panel, #login-view, #loading-overlay, .no-print, .nav-bar {
-                display: none !important; 
+            /* 1. Hide the entire page by default */
+            body * {
+                visibility: hidden !important;
             }
-        
-            /* 2. The "Nuclear Option" for Scrollbars and Heights */
-            * {
+            
+            /* 2. Force the body to be completely unrestricted */
+            body, html, .app-container {
+                height: auto !important;
                 overflow: visible !important;
-                height: auto !important; 
-            }
-            body, html {
+                background: white !important;
                 margin: 0 !important;
                 padding: 0 !important;
-                background: white !important;
             }
-        
-            /* 3. Force Table to Fit */
+
+            /* 3. Make ONLY the Account Statement and Folio Report visible */
+            #stmt-print-area, #stmt-print-area *,
+            #report-print-area, #report-print-area * {
+                visibility: visible !important;
+            }
+
+            /* 4. Shove the visible report to the absolute top-left of the physical paper */
+            #stmt-print-area, #report-print-area {
+                position: absolute !important;
+                left: 0 !important;
+                top: 0 !important;
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                box-shadow: none !important; /* Removes card drop-shadows */
+            }
+
+            /* 5. Force Table to Fit */
             table {
                 width: 100% !important;
-                max-width: 100% !important;
                 table-layout: fixed !important; 
                 border-collapse: collapse !important;
             }
         
-            /* 4. Shrink Text */
             th, td {
                 border: 1px solid #000 !important;
                 color: #000 !important; 
                 font-size: 10px !important; 
                 word-wrap: break-word !important; 
-                white-space: normal !important;
                 padding: 4px !important; 
-            }
-        
-            /* 5. Pagination Rules */
-            thead { display: table-header-group !important; }
-            tr { page-break-inside: avoid !important; }
-            
-            @page {
-                size: A4 portrait; /* Portrait is better for linear statements */
-                margin: 10mm; 
             }
         }
     </style>
