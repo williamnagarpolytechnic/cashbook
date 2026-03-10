@@ -5,6 +5,8 @@ let currentUser = "";
 let currentRole = "";
 let editingRow = null; 
 let activeBanks = []; 
+let globalActiveFunds = [];
+let globalFundBalances = {};
 
 // --- 1. CORE API CALL ---
 async function apiCall(action, payload) {
@@ -44,26 +46,16 @@ function switchTab(tab) {
 
 async function loadFundsAndCategories() {
   const res = await apiCall('getFundsAndCategories', {});
-  
   if (res.success) {
-    const fundSelect = document.getElementById('entry-fund');
+    globalActiveFunds = res.data.funds; // Save to memory
+    
     const categorySelect = document.getElementById('entry-category');
-    
-    // Clear existing options (keep the default "Select..." ones)
-    fundSelect.innerHTML = '<option value="" disabled selected>Select Fund...</option>';
     categorySelect.innerHTML = '<option value="">Select Category (If applicable)...</option>';
-    
-    // Populate Active Funds
-    res.data.funds.forEach(fund => {
-      fundSelect.innerHTML += `<option value="${fund}">${fund}</option>`;
-    });
-    
-    // Populate Categories
     res.data.categories.forEach(category => {
       categorySelect.innerHTML += `<option value="${category}">${category}</option>`;
     });
-  } else {
-    console.error("Failed to load Funds and Categories:", res.message);
+    
+    updateFundUI(); // Trigger the painter
   }
 }
 
@@ -127,6 +119,53 @@ function updateBankDropdowns() {
             dropdown.innerHTML += `<option value="${bank}">${bank}</option>`;
         });
     }
+}
+
+function updateFundUI() {
+    // 1. Paint the Dropdown (Live Balances & Accept Negatives)
+    const fundSelect = document.getElementById('entry-fund');
+    if (fundSelect && globalActiveFunds.length > 0) {
+        let currentValue = fundSelect.value; // Remember what they clicked
+        fundSelect.innerHTML = '<option value="" disabled selected>Select Fund...</option>';
+        
+        globalActiveFunds.forEach(fund => {
+            let bal = globalFundBalances[fund] || 0;
+            // The text changes, but the 'value' stays clean so it saves correctly!
+            let statusText = bal < 0 ? `(-ve: ₹${Math.abs(bal).toFixed(2)})` : (bal === 0 ? `(Exhausted)` : `(₹${bal.toFixed(2)})`);
+            fundSelect.innerHTML += `<option value="${fund}">${fund} ${statusText}</option>`;
+        });
+        if (currentValue && globalActiveFunds.includes(currentValue)) fundSelect.value = currentValue;
+    }
+
+    // 2. Paint the Dashboard Mini-Trackers
+    const boxesContainer = document.getElementById('dynamic-summary-boxes');
+    if (!boxesContainer) return;
+
+    // Create the tracker row if it doesn't exist yet
+    let fundBoxesContainer = document.getElementById('fund-summary-boxes');
+    if (!fundBoxesContainer) {
+        fundBoxesContainer = document.createElement('div');
+        fundBoxesContainer.id = 'fund-summary-boxes';
+        fundBoxesContainer.className = 'summary-container';
+        fundBoxesContainer.style.marginTop = '15px';
+        boxesContainer.parentNode.insertBefore(fundBoxesContainer, boxesContainer.nextSibling);
+    }
+
+    fundBoxesContainer.innerHTML = ''; 
+    globalActiveFunds.forEach(fund => {
+        let bal = globalFundBalances[fund] || 0;
+        let isNegative = bal < 0;
+        let isExhausted = bal === 0;
+
+        // Auto-changing colors based on balance state!
+        let bgColor = isNegative ? '#ffcccc' : (isExhausted ? '#fff3cd' : '#e8f8f5');
+        let textColor = isNegative ? '#c0392b' : (isExhausted ? '#d35400' : '#16a085');
+
+        fundBoxesContainer.innerHTML += `<div class="summary-box" style="background-color: ${bgColor}; color: ${textColor}; border: 1px solid ${textColor}; padding: 10px; flex: 1; min-width: 140px;">
+          <div style="font-size:11px; font-weight:bold; text-transform:uppercase;">${fund}</div>
+          <h3 style="margin:5px 0 0 0;">₹${bal.toFixed(2)}</h3>
+        </div>`;
+    });
 }
 
 // --- UNIFIED ADMIN LIST MANAGER ---
@@ -213,6 +252,7 @@ function updateTable(data) {
   boxesContainer.innerHTML = '';
   
   let balances = { "Cash": 0 };
+  globalFundBalances = {}; // Reset the math before calculating
   activeBanks.forEach(b => balances[b] = 0);
 
 data.forEach(row => {
@@ -226,6 +266,11 @@ data.forEach(row => {
       
       if(balances[method] !== undefined) balances[method] += (rec - pay);
       else if (method && method !== "Cash") balances[method] = (balances[method] || 0) + (rec - pay);
+
+      let fundName = row[10] ? row[10].toString().trim() : "";
+      if (fundName) {
+          globalFundBalances[fundName] = (globalFundBalances[fundName] || 0) + (rec - pay);
+      }
 
       let tr = `<tr>
         <td>${row[1]}</td>  <td>${row[2]}</td>  <td>${row[10] || ''}</td> <td>${row[11] || ''}</td> <td>${row[3]}</td>  <td>${row[4]}</td>  <td>${row[5]}</td>  <td>${row[6]}</td>  <td class="bal-col">${cashBal.toFixed(2)}</td>
@@ -251,6 +296,7 @@ data.forEach(row => {
       const colorClass = (key === "Cash") ? "cash-bg" : "bank-bg";
       boxesContainer.innerHTML += `<div class="summary-box ${colorClass}"><div style="text-transform:uppercase; font-size:12px;">${key}</div><h2 style="margin:5px 0 0 0;">${balances[key].toFixed(2)}</h2></div>`;
   });
+  updateFundUI();
 }
 
 async function submitNewEntry() {
