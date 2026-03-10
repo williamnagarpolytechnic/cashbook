@@ -42,6 +42,31 @@ function switchTab(tab) {
   if(tab === 'admin') { loadUsers(); renderAdminBankList(); }
 }
 
+async function loadFundsAndCategories() {
+  const res = await apiCall('getFundsAndCategories', {});
+  
+  if (res.success) {
+    const fundSelect = document.getElementById('entry-fund');
+    const categorySelect = document.getElementById('entry-category');
+    
+    // Clear existing options (keep the default "Select..." ones)
+    fundSelect.innerHTML = '<option value="" disabled selected>Select Fund...</option>';
+    categorySelect.innerHTML = '<option value="">Select Category (If applicable)...</option>';
+    
+    // Populate Active Funds
+    res.data.funds.forEach(fund => {
+      fundSelect.innerHTML += `<option value="${fund}">${fund}</option>`;
+    });
+    
+    // Populate Categories
+    res.data.categories.forEach(category => {
+      categorySelect.innerHTML += `<option value="${category}">${category}</option>`;
+    });
+  } else {
+    console.error("Failed to load Funds and Categories:", res.message);
+  }
+}
+
 // --- 3. LOGIN & INITIALIZATION ---
 async function attemptLogin() {
   const u = document.getElementById('username').value, p = document.getElementById('password').value;
@@ -63,6 +88,7 @@ async function attemptLogin() {
     const bankRes = await apiCall('getBanks', {});
     activeBanks = (bankRes.success) ? bankRes.data : [];
     updateBankDropdowns();
+    loadFundsAndCategories();
     
     const dataRes = await apiCall('getLedgerData', {});
     if(dataRes.success) updateTable(dataRes.data);
