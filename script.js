@@ -7,6 +7,7 @@ let editingRow = null;
 let activeBanks = []; 
 let globalActiveFunds = [];
 let globalFundBalances = {};
+let globalCategories = [];
 
 // --- 1. CORE API CALL ---
 async function apiCall(action, payload) {
@@ -36,18 +37,22 @@ function switchTab(tab) {
   document.getElementById('dashboard-view').style.display = (tab === 'dashboard') ? 'block' : 'none';
   document.getElementById('report-view').style.display = (tab === 'report') ? 'block' : 'none';
   document.getElementById('admin-view').style.display = (tab === 'admin') ? 'block' : 'none';
-  
+  document.getElementById('statement-view').style.display = (tab === 'statement') ? 'block' : 'none'; // <-- NEW
+
   document.getElementById('nav-dash').className = (tab === 'dashboard') ? 'active' : '';
   document.getElementById('nav-rep').className = (tab === 'report') ? 'active' : '';
   document.getElementById('nav-admin').className = (tab === 'admin') ? 'active' : '';
+  if(document.getElementById('nav-stmt')) document.getElementById('nav-stmt').className = (tab === 'statement') ? 'active' : ''; // <-- NEW
   
   if(tab === 'admin') { loadUsers(); loadAdminLists(); }
+  if(tab === 'statement') { updateStmtDropdown(); } // <-- NEW
 }
 
 async function loadFundsAndCategories() {
   const res = await apiCall('getFundsAndCategories', {});
   if (res.success) {
-    globalActiveFunds = res.data.funds; // Save to memory
+    globalActiveFunds = res.data.funds; 
+    globalCategories = res.data.categories; // <-- NEW: Save categories to memory
     
     const categorySelect = document.getElementById('entry-category');
     categorySelect.innerHTML = '<option value="">Select Category (If applicable)...</option>';
@@ -55,7 +60,8 @@ async function loadFundsAndCategories() {
       categorySelect.innerHTML += `<option value="${category}">${category}</option>`;
     });
     
-    updateFundUI(); // Trigger the painter
+    updateFundUI(); 
+    if(document.getElementById('stmt-type')) updateStmtDropdown(); // <-- NEW: Populates the statement dropdown
   }
 }
 
@@ -486,3 +492,90 @@ async function addNewUser() {
 
 async function delUser(u) { if(confirm("Delete user?")) { await apiCall('deleteUser', { username: u }); loadUsers(); } }
 
+// ==========================================
+// ACCOUNT STATEMENTS LOGIC
+// ==========================================
+function updateStmtDropdown() {
+  const type = document.getElementById('stmt-type').value;
+  const dropdown = document.getElementById('stmt-item');
+  if(!dropdown) return;
+
+  dropdown.innerHTML = '<option value="">Select Item...</option>';
+  const list = (type === 'fund') ? globalActiveFunds : globalCategories;
+  
+  list.forEach(item => {
+      dropdown.innerHTML += `<option value="${item}">${item}</option>`;
+  });
+
+  document.getElementById('stmt-dynamic-col').innerText = (type === 'fund') ? 'Category' : 'Fund';
+}
+
+async function generateStatement() {
+  const type = document.getElementById('stmt-type').value;
+  const item = document.getElementById('stmt-item').value;
+  const from = document.getElementById('stmt-from').value;
+  const to = document.getElementById('stmt-to').value;
+
+  if(!item) return alert("Please select a Fund or Category.");
+
+  const res = await apiCall('generateStatement', { stmtType: type, stmtItem: item, fromDate: from, toDate: to });
+  if(res.success) {
+      renderStatement(res, type, item);
+  } else {
+      alert("Error generating statement: " + res.message);
+  }
+}
+
+function renderStatement(data, type, item) {
+  document.getElementById('stmt-title').innerText = `${item} - Account Statement`;
+  
+  const tbody = document.getElementById('stmt-body');
+  tbody.innerHTML = '';
+
+  // 1. Opening Balance
+  tbody.innerHTML += `<tr style="background-color:#e8f8f5; font-weight:bold;">
+      <td>-</td><td>Opening Balance</td><td>-</td><td>-</td><td>-</td>
+      <td colspan="2"></td><td style="color:${data.openingBalance < 0 ? '#c0392b' : '#16a085'}">₹${data.openingBalance.toFixed(2)}</td>
+  </tr>`;
+
+  // 2. Transactions
+  if(data.transactions.length === 0) {
+      tbody.innerHTML += `<tr><td colspan="8" style="text-align:center;">No transactions in this date range.</td></tr>`;
+  } else {
+      data.transactions.forEach(tx => {
+          tbody.innerHTML += `<tr>
+              <td>${tx.dateStr}</td>
+              <td>${tx.details}</td>
+              <td>${tx.vch}</td>
+              <td>${tx.method}</td>
+              <td>${tx.dynamicCol}</td>
+              <td style="color:#27ae60;">${tx.rec > 0 ? tx.rec.toFixed(2) : ''}</td>
+              <td style="color:#c0392b;">${tx.pay > 0 ? tx.pay.toFixed(2) : ''}</td>
+              <td style="font-weight:bold; color:${tx.runBal < 0 ? '#c0392b' : '#2c3e50'}">${tx.runBal.toFixed(2)}</td>
+          </tr>`;
+      });
+  }
+
+  // 3. Breakdown Summary Box (The Magic Box)
+  const sumBox = document.getElementById('stmt-summary-box');
+  const sumBody = document.getElementById('stmt-summary-body');
+  
+  if(data.breakdown && data.breakdown.length > 0) {
+      sumBox.style.display = 'block';
+      document.getElementById('stmt-summary-title').innerText = type === 'fund' ? 'Expenditure by Category' : 'Fund Source Breakdown';
+      sumBody.innerHTML = '';
+      let totalSpent = 0;
+      data.breakdown.forEach(b => {
+          sumBody.innerHTML += `<tr><td>${b.item}</td><td style="color:#c0392b;">₹${b.amount.toFixed(2)}</td></tr>`;
+          totalSpent += b.amount;
+      });
+      sumBody.innerHTML += `<tr style="font-weight:bold;"><td>TOTAL EXPENDITURE</td><td style="color:#c0392b;">₹${totalSpent.toFixed(2)}</td></tr>`;
+  } else {
+      sumBox.style.display = 'none';
+  }
+}
+
+function downloadStatementPDF() {
+  const element = document.getElementById('stmt-print-area');
+  html2pdf().from(element).set({ margin: 0.5, filename: 'Account_Statement.pdf', jsPDF: { orientation: 'portrait' } }).save();
+}
