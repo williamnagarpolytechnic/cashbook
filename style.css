@@ -241,10 +241,13 @@ td {
     box-shadow: none; 
     border: none; 
   } 
-  .nav-bar, .card:not(#report-print-area) { 
-    display: none !important; /* Hide navigation and forms when printing */
+  
+  /* NEW: Exempts BOTH the Folio Report and the Account Statement from being hidden */
+  .nav-bar, .no-print, .card:not(#report-print-area):not(#stmt-print-area) { 
+    display: none !important; 
   } 
-  #report-print-area { 
+  
+  #report-print-area, #stmt-print-area { 
     padding: 0; 
     margin: 0; 
   }
