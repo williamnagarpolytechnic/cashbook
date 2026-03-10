@@ -101,16 +101,32 @@ async function attemptLogin() {
 
 // --- 4. DYNAMIC BANK LOGIC ---
 function updateBankDropdowns() {
-  const methodDropdown = document.getElementById('entry-method');
-  if(!methodDropdown) return;
-  
-  // Add the disabled default option first
-  methodDropdown.innerHTML = `<option value="" disabled selected>Select Method...</option>`;
-  methodDropdown.innerHTML += `<option value="Cash">Cash</option>`;
-  
-  activeBanks.forEach(bank => {
-      methodDropdown.innerHTML += `<option value="${bank}">${bank}</option>`;
-  });
+    console.log("Diagnostic - activeBanks is currently:", activeBanks);
+
+    // THE SAFETY NET: Check if activeBanks is actually a list
+    if (!Array.isArray(activeBanks)) {
+        console.error("Warning: activeBanks is not a list. Attempting to auto-heal...");
+        
+        // Auto-Heal Scenario 1: It was double-wrapped in an object
+        if (activeBanks && activeBanks.data && Array.isArray(activeBanks.data)) {
+            activeBanks = activeBanks.data; 
+        } 
+        // Auto-Heal Scenario 2: It is undefined or completely broken
+        else {
+            activeBanks = []; 
+        }
+    }
+
+    const dropdown = document.getElementById('entry-method');
+    if (dropdown) {
+        // Reset the dropdown to the default blank option
+        dropdown.innerHTML = '<option value="" disabled selected>Select Cash/Bank...</option>';
+        
+        // Populate the active banks
+        activeBanks.forEach(bank => {
+            dropdown.innerHTML += `<option value="${bank}">${bank}</option>`;
+        });
+    }
 }
 
 function renderAdminBankList() {
