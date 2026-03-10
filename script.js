@@ -234,51 +234,71 @@ function updateTable(data) {
   boxesContainer.innerHTML = '';
   
   let balances = { "Cash": 0 };
-  globalFundBalances = {}; // Reset the math before calculating
   activeBanks.forEach(b => balances[b] = 0);
+  globalFundBalances = {}; // Reset fund math before calculating
 
-data.forEach(row => {
-      let method = row[4].toString().trim();
-      
-      // 1. Strip the commas out of ALL numbers before doing any math!
-      let rec = parseFloat(String(row[5]).replace(/,/g, '')) || 0;
-      let pay = parseFloat(String(row[6]).replace(/,/g, '')) || 0;
-      let cashBal = parseFloat(String(row[7]).replace(/,/g, '')) || 0;
-      let bankBal = parseFloat(String(row[8]).replace(/,/g, '')) || 0;
-      
-      if(balances[method] !== undefined) balances[method] += (rec - pay);
-      else if (method && method !== "Cash") balances[method] = (balances[method] || 0) + (rec - pay);
+  // --- THE SHIELD: Safely neutralizes quotes and newlines so they don't break the HTML ---
+  const safeStr = (str) => {
+      if (!str) return '';
+      return str.toString().replace(/'/g, "\\'").replace(/"/g, "&quot;").replace(/\n/g, " ");
+  };
 
-      let fundName = row[10] ? row[10].toString().trim() : "";
-      if (fundName) {
-          globalFundBalances[fundName] = (globalFundBalances[fundName] || 0) + (rec - pay);
-      }
+  try {
+      data.forEach(row => {
+          let method = row[4] ? row[4].toString().trim() : "";
+          
+          let rec = parseFloat(String(row[5]).replace(/,/g, '')) || 0;
+          let pay = parseFloat(String(row[6]).replace(/,/g, '')) || 0;
+          let cashBal = parseFloat(String(row[7]).replace(/,/g, '')) || 0;
+          let bankBal = parseFloat(String(row[8]).replace(/,/g, '')) || 0;
+          
+          if(balances[method] !== undefined) balances[method] += (rec - pay);
+          else if (method && method !== "Cash") balances[method] = (balances[method] || 0) + (rec - pay);
 
-      let tr = `<tr>
-        <td>${row[1]}</td>  <td>${row[2]}</td>  <td>${row[10] || ''}</td> <td>${row[11] || ''}</td> <td>${row[3]}</td>  <td>${row[4]}</td>  <td>${row[5]}</td>  <td>${row[6]}</td>  <td class="bal-col">${cashBal.toFixed(2)}</td>
-        <td class="bal-col">${bankBal.toFixed(2)}</td>
-        
-        <td>${row[9]}</td>  `;
-        
-      if(currentRole === 'admin') {
-         // 3. Use the clean 'rec' and 'pay' variables so the Edit button doesn't drop zeros!
-         tr += `<td>
-            <button class="btn-warning" onclick="loadTransactionForEdit(${row[12]}, '${row[1]}', '${row[2]}', '${row[3]}', '${row[4]}', ${rec}, ${pay}, '${row[10] || ''}', '${row[11] || ''}')">Edit</button> 
-            <button class="btn-danger" onclick="deleteTx(${row[12]})">Del</button>
-         </td>`;
-      } else {
-         tr += `<td></td>`; 
-      }
-      tr += `</tr>`; 
-      tbody.innerHTML += tr;
-  });
+          let fundName = row[10] ? row[10].toString().trim() : "";
+          if (fundName) {
+              globalFundBalances[fundName] = (globalFundBalances[fundName] || 0) + (rec - pay);
+          }
 
-  // Render Summary Boxes
-  Object.keys(balances).forEach(key => {
-      const colorClass = (key === "Cash") ? "cash-bg" : "bank-bg";
-      boxesContainer.innerHTML += `<div class="summary-box ${colorClass}"><div style="text-transform:uppercase; font-size:12px;">${key}</div><h2 style="margin:5px 0 0 0;">${balances[key].toFixed(2)}</h2></div>`;
-  });
-  updateFundUI();
+          let tr = `<tr>
+            <td>${row[1]}</td>
+            <td>${row[2]}</td>
+            <td>${row[10] || ''}</td>
+            <td>${row[11] || ''}</td>
+            <td>${row[3]}</td>
+            <td>${row[4]}</td>
+            <td>${row[5]}</td>
+            <td>${row[6]}</td>
+            <td class="bal-col">${cashBal.toFixed(2)}</td>
+            <td class="bal-col">${bankBal.toFixed(2)}</td>
+            <td>${row[9]}</td>`;
+            
+          if(currentRole === 'admin') {
+             // We wrap EVERY string in safeStr() to prevent crashes!
+             tr += `<td>
+                <button class="btn-warning" onclick="loadTransactionForEdit(${row[12]}, '${safeStr(row[1])}', '${safeStr(row[2])}', '${safeStr(row[3])}', '${safeStr(row[4])}', ${rec}, ${pay}, '${safeStr(row[10])}', '${safeStr(row[11])}')">Edit</button> 
+                <button class="btn-danger" onclick="deleteTx(${row[12]})">Del</button>
+             </td>`;
+          } else {
+             tr += `<td></td>`; 
+          }
+          tr += `</tr>`; 
+          tbody.innerHTML += tr;
+      });
+
+      // Render Summary Boxes
+      Object.keys(balances).forEach(key => {
+          const colorClass = (key === "Cash") ? "cash-bg" : "bank-bg";
+          boxesContainer.innerHTML += `<div class="summary-box ${colorClass}"><div style="text-transform:uppercase; font-size:12px;">${key}</div><h2 style="margin:5px 0 0 0;">${balances[key].toFixed(2)}</h2></div>`;
+      });
+
+      // Paint the Fund trackers!
+      updateFundUI(); 
+
+  } catch (error) {
+      console.error("Table Render Crash:", error);
+      tbody.innerHTML = `<tr><td colspan="12" style="color:red; text-align:center; padding:20px;"><b>System Alert:</b> A corrupted row prevented the table from loading. Press F12 to check the console.</td></tr>`;
+  }
 }
 
 async function submitNewEntry() {
