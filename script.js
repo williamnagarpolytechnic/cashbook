@@ -157,14 +157,25 @@ function renderAdminLists(data) {
         data.banks.forEach(b => bBody.innerHTML += `<tr><td><strong>${b}</strong></td><td><button class="btn-danger" onclick="delBank('${b}')">Delete</button></td></tr>`);
     }
 
-    // 3. Render Funds (Color coded status!)
+    // 3. Render Funds (Color coded status & Balances!)
     const fBody = document.getElementById('funds-body');
     if(fBody) {
         fBody.innerHTML = '';
         data.funds.forEach(f => {
             const statusColor = f.status.toLowerCase() === 'active' ? 'green' : 'red';
             const btnText = f.status.toLowerCase() === 'active' ? 'Close Fund' : 'Re-Open';
-            fBody.innerHTML += `<tr><td><strong>${f.name}</strong></td><td style="color:${statusColor}; font-weight:bold;">${f.status}</td><td><button class="btn-warning" onclick="toggleFund('${f.name}')">${btnText}</button></td></tr>`;
+            
+            // Grab the live balance from the ledger math
+            let bal = globalFundBalances[f.name] || 0;
+            let balText = bal < 0 ? `<span style="color:#c0392b; font-weight:bold;">-ve ₹${Math.abs(bal).toFixed(2)}</span>` : 
+                          (bal === 0 ? `<span style="color:#d35400; font-weight:bold;">Exhausted (₹0.00)</span>` : `₹${bal.toFixed(2)}`);
+
+            fBody.innerHTML += `<tr>
+                <td><strong>${f.name}</strong></td>
+                <td>${balText}</td>
+                <td style="color:${statusColor}; font-weight:bold;">${f.status}</td>
+                <td><button class="btn-warning" onclick="toggleFund('${f.name}')">${btnText}</button></td>
+            </tr>`;
         });
     }
 
