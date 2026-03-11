@@ -1,4 +1,4 @@
-// ---> UPDATE THIS LINK WITH YOUR GOOGLE APPS SCRIPT /exec URL <---
+
 const API_URL = "https://script.google.com/macros/s/AKfycbxa5w0x_01aCnOar_ihueNoMdF08sPksQRxStb7UKOs1JaOcerc-AT5_UnwotrbVmjclQ/exec"; 
 
 let currentUser = "";
