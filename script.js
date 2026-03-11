@@ -323,7 +323,7 @@ async function submitNewEntry(isSplit = false) {
       return alert("Please fill all required fields and select dropdown options.");
   }
 
-  // Change button text so the user knows it is saving
+  // Visual feedback: Show "Saving..." on whichever button was clicked
   const btnId = isSplit ? 'split-btn' : 'submit-btn';
   const originalText = document.getElementById(btnId).innerHTML;
   document.getElementById(btnId).innerHTML = "Saving...";
@@ -334,17 +334,25 @@ async function submitNewEntry(isSplit = false) {
 
   if (res.success) {
       updateTable(res.data);
-      cancelEdit();
       
+      // Reset editing states manually so we don't accidentally wipe data with cancelEdit()
+      editingRow = null;
+      document.getElementById('submit-btn').innerHTML = "Post Entry";
+      document.getElementById('cancel-btn').style.display = "none";
+      if(document.getElementById('split-btn')) document.getElementById('split-btn').style.display = "inline-block";
+      
+      // THE SPLIT LOGIC
       if (isSplit) {
-          // POST & SPLIT: Only clear the specific fields that change!
+          // POST & SPLIT: Only clear Details, Category, and Amount
           document.getElementById('entry-details').value = '';
           document.getElementById('entry-amount').value = '';
           document.getElementById('entry-category').value = '';
-          // Leave Date, Voucher, Method, Type, and Fund filled in!
+          // Leave Date, Voucher, Method, Type, and Fund perfectly intact!
+          
           alert("Row saved! Form is ready for the next part of the split.");
       } else {
-          // NORMAL POST: Clear everything
+          // NORMAL POST: Clear everything for a brand new transaction
+          document.getElementById('entry-date').value = ''; 
           document.getElementById('entry-details').value = '';
           document.getElementById('entry-voucher').value = '';
           document.getElementById('entry-amount').value = '';
@@ -375,6 +383,7 @@ function loadTransactionForEdit(rowNum, date, details, vch, method, rec, pay, fu
   document.getElementById('submit-btn').innerHTML = "Update Entry";
   document.getElementById('cancel-btn').style.display = "inline-block";
   document.getElementById('split-btn').style.display = "none";
+  if(document.getElementById('split-btn')) document.getElementById('split-btn').style.display = "none";
 }
 
 function cancelEdit() {
@@ -384,6 +393,7 @@ function cancelEdit() {
   document.getElementById('submit-btn').innerHTML = "Post Entry";
   document.getElementById('cancel-btn').style.display = "none";
   document.getElementById('split-btn').style.display = "inline-block";
+  if(document.getElementById('split-btn')) document.getElementById('split-btn').style.display = "inline-block";
 }
 
 async function deleteTx(row) { if(confirm("Delete?")) { const res = await apiCall('deleteTransaction', { rowNum: row }); if(res.success) updateTable(res.data); } }
