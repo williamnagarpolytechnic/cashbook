@@ -307,7 +307,7 @@ function updateTable(data) {
   }
 }
 
-async function submitNewEntry() {
+async function submitNewEntry(isSplit = false) {
   const entryData = {
     date: document.getElementById('entry-date').value,
     details: document.getElementById('entry-details').value,
@@ -315,29 +315,44 @@ async function submitNewEntry() {
     method: document.getElementById('entry-method').value,
     type: document.getElementById('entry-type').value,
     amount: document.getElementById('entry-amount').value,
-    fund: document.getElementById('entry-fund').value,           // <-- NEW
-    category: document.getElementById('entry-category').value    // <-- NEW
+    fund: document.getElementById('entry-fund').value,           
+    category: document.getElementById('entry-category').value    
   };
   
-  // Strict Validation: Checks if ANY required field is empty (Added fund)
   if(!entryData.date || !entryData.details || !entryData.amount || !entryData.method || !entryData.type || !entryData.fund) {
       return alert("Please fill all required fields and select dropdown options.");
   }
+
+  // Change button text so the user knows it is saving
+  const btnId = isSplit ? 'split-btn' : 'submit-btn';
+  const originalText = document.getElementById(btnId).innerHTML;
+  document.getElementById(btnId).innerHTML = "Saving...";
   
   let res = editingRow ? await apiCall('updateTransaction', { rowNum: editingRow, entryData, userName: currentUser }) : await apiCall('addEntry', { entryData, userName: currentUser });
+
+  document.getElementById(btnId).innerHTML = originalText;
 
   if (res.success) {
       updateTable(res.data);
       cancelEdit();
       
-      // CLEAR FIELDS AFTER SUCCESS
-      document.getElementById('entry-details').value = '';
-      document.getElementById('entry-voucher').value = '';
-      document.getElementById('entry-amount').value = '';
-      document.getElementById('entry-method').value = ''; 
-      document.getElementById('entry-type').value = '';   
-      document.getElementById('entry-fund').value = '';      // <-- NEW
-      document.getElementById('entry-category').value = '';  // <-- NEW
+      if (isSplit) {
+          // POST & SPLIT: Only clear the specific fields that change!
+          document.getElementById('entry-details').value = '';
+          document.getElementById('entry-amount').value = '';
+          document.getElementById('entry-category').value = '';
+          // Leave Date, Voucher, Method, Type, and Fund filled in!
+          alert("Row saved! Form is ready for the next part of the split.");
+      } else {
+          // NORMAL POST: Clear everything
+          document.getElementById('entry-details').value = '';
+          document.getElementById('entry-voucher').value = '';
+          document.getElementById('entry-amount').value = '';
+          document.getElementById('entry-method').value = ''; 
+          document.getElementById('entry-type').value = '';   
+          document.getElementById('entry-fund').value = '';      
+          document.getElementById('entry-category').value = '';  
+      }
   } else {
       alert(res.message);
   }
@@ -359,6 +374,7 @@ function loadTransactionForEdit(rowNum, date, details, vch, method, rec, pay, fu
   editingRow = rowNum;
   document.getElementById('submit-btn').innerHTML = "Update Entry";
   document.getElementById('cancel-btn').style.display = "inline-block";
+  document.getElementById('split-btn').style.display = "none";
 }
 
 function cancelEdit() {
@@ -367,6 +383,7 @@ function cancelEdit() {
   document.getElementById('entry-amount').value = '';
   document.getElementById('submit-btn').innerHTML = "Post Entry";
   document.getElementById('cancel-btn').style.display = "none";
+  document.getElementById('split-btn').style.display = "inline-block";
 }
 
 async function deleteTx(row) { if(confirm("Delete?")) { const res = await apiCall('deleteTransaction', { rowNum: row }); if(res.success) updateTable(res.data); } }
